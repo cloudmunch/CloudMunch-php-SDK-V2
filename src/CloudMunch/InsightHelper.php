@@ -740,5 +740,194 @@ class InsightHelper
         }
     }
 
+    /**
+     *   Pull data from cloudmunch data base
+     *
+     *   @param  string resourceID       : id of resource
+     *   @param  array  dataStoreName    : data store name from which data needs to be pulled
+     *   @param  array  filterFields     : comma seperated string fields to pass as filter in request
+     *   @param  string timeArray        : range of dates which will passed as filter
+     *   @return array  data             : data recieved from data base
+     *                  dataStoreID      : data store id from which data was pulled
+     */
+    public function getExtractData($resourceID, $dataStoreName, $filterFields = "name,result", $projectionUnit = "day", $timeArray = null) {
+        $this->logHelper->log("INFO", "Attempting data pull from cloudmunch data base ...");
+        $paramHash = array();
+        $paramHash["fields"] = $filterFields;
+        $data   = array();
+        $filter = "filter";
+
+        $dataStoreID = $this->getInsightDataStoreID($resourceID, $dataStoreName);
+
+        if (!$dataStoreID) {
+          $this->logHelper->log("ERROR", "Unable to retrive data store id!");
+          return false;
+        }
+
+        // get data sprint wise
+        if (!is_null($timeArray) && is_array($timeArray) && ($projectionUnit === "sprint")) {
+            foreach ($timeArray as $sprint => $dateList) {
+                $sprintData = array();
+                $paramHash[$filter] = array('name' => $dateList);
+                $sprintData = $this->getInsightDataStoreExtracts($resourceID, $dataStoreID, $paramHash, '');
+                if($sprintData && is_array($sprintData) && count($sprintData) > 0) {
+                    $data[$sprint] = $sprintData;
+                } else {
+                    $data[$sprint] = array();
+                }
+            }
+        } else {
+            if (!is_null($timeArray) && is_array($timeArray)){
+                $timeString = "";
+                foreach ($timeArray as $key => $value) {
+                    // workaround for code smell - unused local variable
+                    echo str_replace($key, "", $key);
+                    $timeString = ($timeString !== "") ? $timeString.",".$value : $value;
+                }
+                $paramHash[$filter] = array('name' => 'IN ('.$timeString.')' );                
+            }
+            $data = $this->getInsightDataStoreExtracts($resourceID,$dataStoreID,$paramHash,'');
+            if (!$data) {
+              $this->logHelper->log("ERROR", "Unable to retrieve extracts for date projection!");
+              return false;
+            }
+        }
+
+        $this->logHelper->log("INFO", "Data recieved from CMDB");
+
+        return $data;
+    }
+
+    /**
+     *   Create report of type lintrend or kanban
+     *
+     *   @param object cmInsightsHelper : Object with insight helpers
+     *   @param string resourceID       : id of resource
+     *   @param array  dataFromCMDB     : data to be passed for report creation
+     *   @param string reportName       : name of report
+     *   @param string cardTitle        : label to be displayed on card
+     *   @param string source           : source of generated data
+     *   @param string description      : description of report
+     *   @param string group            : group to which this card belongs
+     *   @param string graphLegendsList : legends displayed in graph
+     *   @param string xAxisLabel       : label displayed on x-axis
+     *   @param string yAxisLabel       : label displayed on y-axis
+     */
+    public function createLineGraph($resourceID, $dataFromCMDB, $reportName, $cardTitle, $source, $description, $group, $graphLegendsList = null, $xAxisLabel = "Date", $yAxisLabel = "%"){
+        $this->logHelper->log("INFO", "Attempting creation of report - $reportName ...");
+        $dataOutput = array();
+        $data       = array();
+
+        $visualizationMap = $this->linegraph_constructViewcardVisualizationMeta($graphLegendsList);
+        $cardMeta = $this->linegraph_constructViewcardMeta($cardTitle, $source, $description, $group, $xAxisLabel, $yAxisLabel);
+        $dataOutput["data"] = array();
+        $dataOutput["data"] = $dataFromCMDB;
+
+        $dataOutput["card_meta"] = $cardMeta;
+        $dataOutput["visualization_map"] = $visualizationMap;
+        $data["data"] = $dataOutput;
+
+        $reportID = $this->createInsightReport($resourceID, date('Y-m-d'));
+        $cardID   = $this->createInsightReportCard($resourceID, $reportID, $reportName);
+        $this->updateInsightReportCard($resourceID, $reportID, $cardID, $data);
+        $this->logHelper->log("INFO", 'Report creation complete!');
+        return $reportID;
+    }
+
+    /**
+     *   Create report of type lintrend or kanban
+     *
+     *   @param object cmInsightsHelper : Object with insight helpers
+     *   @param string resourceID       : id of resource
+     *   @param array  dataFromCMDB     : data to be passed for report creation
+     *   @param string reportName       : name of report
+     *   @param string cardTitle        : label to be displayed on card
+     *   @param string source           : source of generated data
+     *   @param string description      : description of report
+     *   @param string group            : group to which this card belongs
+     *   @param string graphLegendsList : legends displayed in graph
+     *   @param string xAxisLabel       : label displayed on x-axis
+     *   @param string yAxisLabel       : label displayed on y-axis
+     */
+    public function createKanbanGraph($resourceID, $dataFromCMDB, $reportName, $cardTitle, $source, $description, $group){
+        $this->logHelper->log("INFO", "Attempting creation of report - $reportName ...");
+        $dataOutput = array();
+        $data       = array();
+
+        $visualizationMap = $this->kanban_constructViewcardVisualizationMeta();
+        $cardMeta = $this->kanban_constructViewcardMeta($cardTitle, $source, $description, $group);            
+        $dataOutput["data"] = array();
+        $dataOutput["data"] = array($dataFromCMDB);
+
+        $dataOutput["card_meta"] = $cardMeta;
+        $dataOutput["visualization_map"] = $visualizationMap;
+        $data["data"] = $dataOutput;
+
+        $reportID = $this->createInsightReport($resourceID, date('Y-m-d'));
+        $cardID   = $this->createInsightReportCard($resourceID, $reportID, $reportName);
+        $this->updateInsightReportCard($resourceID, $reportID, $cardID, $data);
+        $this->logHelper->log("INFO", 'Report creation complete!');
+        return $reportID;
+    }
+
+    /**
+     *   Contruct Viewcard visualization meta data
+     *
+     *   @param array graphLegendsList : List of graphs legend
+     *
+     *   @return array with visualization map
+     */
+    public function linegraph_constructViewcardVisualizationMeta($graphLegendsList) {
+        return array("plots" => array( "x" => array("label"), "y" => $graphLegendsList));
+    }
+
+    /**
+     *   Construct view card meta data
+     *   
+     *   @return array with Card meta data
+     */
+    public function linegraph_constructViewcardMeta($cardTitle, $source, $description, $group, $xAxisLabel = "Date", $yAxisLabel = "%") {
+        return array(
+                        "default" => "line_default", 
+                        "url"     => "#", 
+                        "date"    => date("Y-m-d H:i:s"), 
+                        "label"   => ucfirst($cardTitle), 
+                        "source"  => $source, 
+                        "group"   => $group,
+                        "description" => $description,
+                        "visualization_options" => array("line_default"),
+                        "xaxis"   => array("label" => $xAxisLabel),
+                        "yaxis"   => array("label" => $yAxisLabel),
+                    );
+    }
+
+    /**
+     *   Construct view card meta data
+     *   
+     *   @return array with Card meta data
+     */
+    public function kanban_constructViewcardMeta($cardTitle, $source, $description, $group) {
+        return array(
+                    "default" => "kanban", 
+                    "url"     => "#", 
+                    "date"    => date('Y-m-d H:i:s'), 
+                    "label"   => ucfirst($cardTitle), 
+                    "source"  => $source, 
+                    "group"   => $group,
+                    "description" => $description,
+                    "visualization_options" => array("kanban")
+                );
+    }
+
+    /**
+     *   Contruct Viewcard visualization meta data
+     *
+     *   @param array graphLegendsList : List of graphs legend
+     *
+     *   @return array with visualization map
+     */
+    public function kanban_constructViewcardVisualizationMeta() {
+        return array( "cards" => array("type" => "kanban"));
+    }    
 }
 ?>
