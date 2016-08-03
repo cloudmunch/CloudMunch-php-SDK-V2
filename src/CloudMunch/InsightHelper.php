@@ -928,6 +928,43 @@ class InsightHelper
      */
     public function kanban_constructViewcardVisualizationMeta() {
         return array( "cards" => array("type" => "kanban"));
-    }    
+    }
+
+    /**
+     *   Store passed data in data store
+     *
+     *   @param string resourceID       : id of resource
+     *   @param array  data             : data to be stored in database
+     *   @param string dataStoreName    : name of data store
+     */
+    public function updateExtract($resourceID, $data, $dataStoreName, $extractName = null){
+        $extractName = (is_null($extractName) || empty($extractName)) ? date('Y-m-d') : $extractName;
+        if($resourceID && is_array($data) && $dataStoreName) {
+            $this->logHelper->log("INFO", "Attempting Creation of Data Store $dataStoreName ...");
+            $dataStoreID = $this->createInsightDataStore($resourceID, $dataStoreName);
+            if (!$dataStoreID) {
+                $this->logHelper->log("ERROR", "Unable to create datastore!");
+                return false;
+            }
+            $this->logHelper->log("INFO", "DataStore created!");
+
+            $arrData = [];
+            $arrData[result] = $data;
+            $extractID = $this->createInsightDataStoreExtract($resourceID, $dataStoreID, $extractName);
+            if (!$extractID) {
+                $this->logHelper->log("ERROR", "'Unable to create extract!");
+                return false;
+            }
+            $response = $this->updateInsightDataStoreExtract($resourceID, $dataStoreID, $extractID, $arrData);
+            if (!$response) {
+                $this->logHelper->log("ERROR", "'Unable to update extract!");
+                return false;
+            }
+            $this->logHelper->log("INFO", "DataStore extract created!");
+        } else {
+            $this->logHelper->log("ERROR", "Resource id, data and datastore name has to be passed to update an extract");
+            return false;
+        }
+    } 
 }
 ?>
