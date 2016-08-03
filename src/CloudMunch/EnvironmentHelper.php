@@ -202,7 +202,7 @@ class EnvironmentHelper {
 	 */
 	function updateEnvironment($environmentID, $environmentData, $comment = null) {
 		$serverurl = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/environments/" . $environmentID;
-		
+		$this->appContext->setEnvironment ( $environmentID );
 		$this->cmDataManager->updateDataForContext ( $serverurl, $this->appContext->getAPIKey (), $environmentData, $comment );
 	}
 	
