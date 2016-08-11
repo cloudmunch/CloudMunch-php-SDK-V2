@@ -815,7 +815,6 @@ class InsightHelper
      */
     public function createLineGraph($resourceID, $dataFromCMDB, $reportName, $cardTitle, $source, $description, $group, $graphLegendsList = null, $xAxisLabel = "Date", $yAxisLabel = "%", $tolerance = null){
         $this->logHelper->log("INFO", "Attempting creation of report - $reportName ...");
-        var_dump($tolerance);
         
         $dataOutput = array();
         $data       = array();
