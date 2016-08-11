@@ -813,13 +813,14 @@ class InsightHelper
      *   @param string xAxisLabel       : label displayed on x-axis
      *   @param string yAxisLabel       : label displayed on y-axis
      */
-    public function createLineGraph($resourceID, $dataFromCMDB, $reportName, $cardTitle, $source, $description, $group, $graphLegendsList = null, $xAxisLabel = "Date", $yAxisLabel = "%"){
+    public function createLineGraph($resourceID, $dataFromCMDB, $reportName, $cardTitle, $source, $description, $group, $graphLegendsList = null, $xAxisLabel = "Date", $yAxisLabel = "%", $tolerance = null){
         $this->logHelper->log("INFO", "Attempting creation of report - $reportName ...");
+        
         $dataOutput = array();
         $data       = array();
 
         $visualizationMap = $this->linegraph_constructViewcardVisualizationMeta($graphLegendsList);
-        $cardMeta = $this->linegraph_constructViewcardMeta($cardTitle, $source, $description, $group, $xAxisLabel, $yAxisLabel);
+        $cardMeta = $this->linegraph_constructViewcardMeta($cardTitle, $source, $description, $group, $xAxisLabel, $yAxisLabel, $tolerance);
         $dataOutput["data"] = array();
         $dataOutput["data"] = $dataFromCMDB;
 
@@ -849,13 +850,13 @@ class InsightHelper
      *   @param string xAxisLabel       : label displayed on x-axis
      *   @param string yAxisLabel       : label displayed on y-axis
      */
-    public function createKanbanGraph($resourceID, $dataFromCMDB, $reportName, $cardTitle, $source, $description, $group){
+    public function createKanbanGraph($resourceID, $dataFromCMDB, $reportName, $cardTitle, $source, $description, $group, $tolerance = null){
         $this->logHelper->log("INFO", "Attempting creation of report - $reportName ...");
         $dataOutput = array();
         $data       = array();
 
         $visualizationMap = $this->kanban_constructViewcardVisualizationMeta();
-        $cardMeta = $this->kanban_constructViewcardMeta($cardTitle, $source, $description, $group);            
+        $cardMeta = $this->kanban_constructViewcardMeta($cardTitle, $source, $description, $group, $tolerance);            
         $dataOutput["data"] = array();
         $dataOutput["data"] = array($dataFromCMDB);
 
@@ -886,19 +887,29 @@ class InsightHelper
      *   
      *   @return array with Card meta data
      */
-    public function linegraph_constructViewcardMeta($cardTitle, $source, $description, $group, $xAxisLabel = "Date", $yAxisLabel = "%") {
-        return array(
-                        "default" => "line_default", 
-                        "url"     => "#", 
-                        "date"    => date("Y-m-d H:i:s"), 
-                        "label"   => ucfirst($cardTitle), 
-                        "source"  => $source, 
-                        "group"   => $group,
-                        "description" => $description,
-                        "visualization_options" => array("line_default"),
-                        "xaxis"   => array("label" => $xAxisLabel),
-                        "yaxis"   => array("label" => $yAxisLabel),
-                    );
+    public function linegraph_constructViewcardMeta($cardTitle, $source, $description, $group, $xAxisLabel = "Date", $yAxisLabel = "%", $tolerance = null) {
+        $cardMeta =  array(
+                            "default" => "line_default", 
+                            "url"     => "#", 
+                            "date"    => date("Y-m-d H:i:s"), 
+                            "label"   => ucfirst($cardTitle), 
+                            "source"  => $source, 
+                            "group"   => $group,
+                            "description" => $description,
+                            "visualization_options" => array("line_default"),
+                            "xaxis"   => array("label" => $xAxisLabel),
+                            "yaxis"   => array("label" => $yAxisLabel),
+                        );
+
+        $isToleranceSet = (isset($tolerance) && is_array($tolerance) && count($tolerance) > 0);
+        
+        if ($isToleranceSet) {
+            $cardMeta['toleranceState'] = ($isToleranceSet && $tolerance['toleranceState']) ? $tolerance['toleranceState'] : '';
+            $cardMeta['toleranceDescription'] = ($isToleranceSet && $tolerance['toleranceDescription']) ? $tolerance['toleranceDescription'] : '';
+            $cardMeta['toleranceHit'] = ($isToleranceSet && $tolerance['toleranceHit']) ? $tolerance['toleranceHit'] : '';
+        }
+        
+        return $cardMeta;
     }
 
     /**
@@ -906,17 +917,27 @@ class InsightHelper
      *   
      *   @return array with Card meta data
      */
-    public function kanban_constructViewcardMeta($cardTitle, $source, $description, $group) {
-        return array(
-                    "default" => "kanban", 
-                    "url"     => "#", 
-                    "date"    => date('Y-m-d H:i:s'), 
-                    "label"   => ucfirst($cardTitle), 
-                    "source"  => $source, 
-                    "group"   => $group,
-                    "description" => $description,
-                    "visualization_options" => array("kanban")
-                );
+    public function kanban_constructViewcardMeta($cardTitle, $source, $description, $group, $tolerance = null) {
+        $cardMeta =  array(
+                        "default" => "kanban", 
+                        "url"     => "#", 
+                        "date"    => date('Y-m-d H:i:s'), 
+                        "label"   => ucfirst($cardTitle), 
+                        "source"  => $source, 
+                        "group"   => $group,
+                        "description" => $description,
+                        "visualization_options" => array("kanban")
+                    );
+
+        $isToleranceSet = (isset($tolerance) && is_array($tolerance) && count($tolerance) > 0);
+        
+        if ($isToleranceSet) {
+            $cardMeta['toleranceState'] = ($isToleranceSet && $tolerance['toleranceState']) ? $tolerance['toleranceState'] : '';
+            $cardMeta['toleranceDescription'] = ($isToleranceSet && $tolerance['toleranceDescription']) ? $tolerance['toleranceDescription'] : '';
+            $cardMeta['toleranceHit'] = ($isToleranceSet && $tolerance['toleranceHit']) ? $tolerance['toleranceHit'] : '';
+        }
+        
+        return $cardMeta;
     }
 
     /**
