@@ -440,7 +440,14 @@ class EnvironmentHelper {
 		
 		$tierbackup = array ();
 		$assetNames = array ();
-		foreach ( $tiers as $tier ) {
+		
+		foreach ( $tiers as $tier=>$tierdetail) {
+                        if (($key = array_search ($assetID,$tierdetail->assets)) !== false) {
+				unset ($tierdetail->assets[$key]);
+				$tiers->{$tier}->assets = $tierdetail->assets;
+                        }
+		}
+		/*foreach ( $tiers as $tier ) {
 			foreach ( $tier as $key => $value ) {
 				$assets = $value->assets;
 				if (($key = array_search ( $assetID, $assets )) !== false) {
@@ -452,7 +459,7 @@ class EnvironmentHelper {
 				}
 				
 			}
-		}
+		}*/
 		$data = array (
 				"tiers" => $tiers 
 		);
