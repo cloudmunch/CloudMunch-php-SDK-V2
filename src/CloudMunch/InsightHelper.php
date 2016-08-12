@@ -813,14 +813,14 @@ class InsightHelper
      *   @param string xAxisLabel       : label displayed on x-axis
      *   @param string yAxisLabel       : label displayed on y-axis
      */
-    public function createLineGraph($resourceID, $dataFromCMDB, $reportName, $cardTitle, $source, $description, $group, $graphLegendsList = null, $xAxisLabel = "Date", $yAxisLabel = "%", $tolerance = null){
+    public function createLineGraph($resourceID, $dataFromCMDB, $reportName, $cardTitle, $source, $description, $group, $graphLegendsList = null, $xAxisLabel = "Date", $yAxisLabel = "%", $tolerance = null, $url = "#"){
         $this->logHelper->log("INFO", "Attempting creation of report - $reportName ...");
         
         $dataOutput = array();
         $data       = array();
 
         $visualizationMap = $this->linegraph_constructViewcardVisualizationMeta($graphLegendsList);
-        $cardMeta = $this->linegraph_constructViewcardMeta($cardTitle, $source, $description, $group, $xAxisLabel, $yAxisLabel, $tolerance);
+        $cardMeta = $this->linegraph_constructViewcardMeta($cardTitle, $source, $description, $group, $xAxisLabel, $yAxisLabel, $tolerance, $url);
         $dataOutput["data"] = array();
         $dataOutput["data"] = $dataFromCMDB;
 
@@ -850,13 +850,13 @@ class InsightHelper
      *   @param string xAxisLabel       : label displayed on x-axis
      *   @param string yAxisLabel       : label displayed on y-axis
      */
-    public function createKanbanGraph($resourceID, $dataFromCMDB, $reportName, $cardTitle, $source, $description, $group, $tolerance = null){
+    public function createKanbanGraph($resourceID, $dataFromCMDB, $reportName, $cardTitle, $source, $description, $group, $tolerance = null, $url = "#"){
         $this->logHelper->log("INFO", "Attempting creation of report - $reportName ...");
         $dataOutput = array();
         $data       = array();
 
         $visualizationMap = $this->kanban_constructViewcardVisualizationMeta();
-        $cardMeta = $this->kanban_constructViewcardMeta($cardTitle, $source, $description, $group, $tolerance);            
+        $cardMeta = $this->kanban_constructViewcardMeta($cardTitle, $source, $description, $group, $tolerance, $url);            
         $dataOutput["data"] = array();
         $dataOutput["data"] = array($dataFromCMDB);
 
@@ -887,10 +887,10 @@ class InsightHelper
      *   
      *   @return array with Card meta data
      */
-    public function linegraph_constructViewcardMeta($cardTitle, $source, $description, $group, $xAxisLabel = "Date", $yAxisLabel = "%", $tolerance = null) {
+    public function linegraph_constructViewcardMeta($cardTitle, $source, $description, $group, $xAxisLabel = "Date", $yAxisLabel = "%", $tolerance = null, $url = "#") {
         $cardMeta =  array(
                             "default" => "line_default", 
-                            "url"     => "#", 
+                            "url"     => $url, 
                             "date"    => date("Y-m-d H:i:s"), 
                             "label"   => ucfirst($cardTitle), 
                             "source"  => $source, 
@@ -917,10 +917,10 @@ class InsightHelper
      *   
      *   @return array with Card meta data
      */
-    public function kanban_constructViewcardMeta($cardTitle, $source, $description, $group, $tolerance = null) {
+    public function kanban_constructViewcardMeta($cardTitle, $source, $description, $group, $tolerance = null, $url = "#") {
         $cardMeta =  array(
                         "default" => "kanban", 
-                        "url"     => "#", 
+                        "url"     => $url, 
                         "date"    => date('Y-m-d H:i:s'), 
                         "label"   => ucfirst($cardTitle), 
                         "source"  => $source, 
