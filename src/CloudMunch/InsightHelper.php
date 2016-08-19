@@ -649,7 +649,6 @@ class InsightHelper
         }
     }
 
-
     public function sprint_getSprintDetailsFromJiraCMDB(){
         list($jiraResourceID, $jiraProjectName, $rapidBoardID, $mvpVersion) = $this->sprint_getJiraProjectNameFromResource("jira");
 
@@ -986,6 +985,64 @@ class InsightHelper
             $this->logHelper->log("ERROR", "Resource id, data and datastore name has to be passed to update an extract");
             return false;
         }
-    } 
+    }
+
+    /**
+     * Compare  and set tolerance status based on percentage change in value of latest element with its previous element against provided upper and lower limit.
+     * Status takes precedence in the following order, Failed > Warning > success
+     *
+     * @param  array    data        : data constructed for trend graph
+     * @param  integer  upperLimit  : upper limit for change
+     * @param  integer  lowerLimit  : lower limit for change
+     * @return array    tolerance   : toleranceState (success, failure, warning, critical)
+     *                              : toleranceDescription
+     *                              : toleranceHit
+     */
+    function checkToleranceForTrend($data, $upperLimit, $lowerLimit) {
+        $elements = count($data);
+        $upperLimit = intval($upperLimit);
+        $lowerLimit = intval($lowerLimit);
+        $tolerance = array();
+        // Need a minimum of 2 elements to compare
+        if($elements > 1){
+            $latest    = $elements - 1;
+            $previous  = $latest - 1;
+            $toleranceFailed  = false;
+            $toleranceWarning = false;
+            $tolerance['toleranceDescription'] = 'Compare change of latest entry with its previous one against provided upper and lower limit. If change is less than lower limit, status of card will be set to success, if change is greater than upper limit, status will be set to critical else it will be set to warning.';
+            foreach ($data[$latest] as $key => $value) {
+                if (strtolower($key) !== "label" && $data[$previous] && $data[$previous]->$key && floatval($data[$previous]->$key) !== 0) {
+
+                    // % change = ( abs (originalValue - newValue) / originalValue ) * 100
+                    $change = number_format(( abs( floatval( $value ) - floatval( $data[$previous]->$key ) ) / floatval( $data[$previous]->$key )) * 100);                    
+
+                    if ($change > $upperLimit) {
+                        $toleranceFailed = true;
+                        $toleranceMsg    = "Percentage change for $key ($change) is greater than upper limit (".$upperLimit.").";
+                        $tolerance['toleranceState'] = 'critical';
+                        $tolerance['toleranceHit']   = isset($tolerance['toleranceHit']) ? $tolerance['toleranceHit']." ".$toleranceMsg : $toleranceMsg; 
+                    } elseif (($change <= $upperLimit) && ($change >= $lowerLimit)) {
+                        $toleranceWarning = true;
+                        $toleranceMsg     = "Percentage change for $key ($change) is between upper limit (".$upperLimit.") and lower limit (".$lowerLimit.").";
+                        $tolerance['toleranceHit']   = isset($tolerance['toleranceHit']) ? $tolerance['toleranceHit']." ".$toleranceMsg : $toleranceMsg; 
+                        $tolerance['toleranceState'] = !$toleranceFailed ? "warning" : $tolerance['toleranceState'];
+                    } elseif ($change < intval($upperLimit)) {
+                        $tolerance['toleranceState'] = (!$toleranceFailed && !$toleranceWarning) ? "success" : $tolerance['toleranceState'];
+                    }
+                }
+            }
+            if ($toleranceFailed || $toleranceWarning){
+                $tolerance['toleranceDescription'] .= "\n".$tolerance['toleranceHit'];
+            } elseif ($tolerance['toleranceState'] === 'success') {
+                $tolerance['toleranceDescription'] .= "\nChange is within the acceptance criteria.";                
+            } else {
+                $tolerance["toleranceDescription"] .= "Tolerance was not checked for this card. The following conditions have to be met to perform the same : \n- There should be atleast two values in x-axis.\n- X-axis value of (n-1)th element should be greater than 0";
+            }
+            return $tolerance;
+        } else {
+            $tolerance["toleranceDescription"] = "Tolerance was not checked for this card. The following conditions have to be met to perform the same : \n- There should be atleast two values in x-axis.\n- X-axis value of (n-1)th element should be greater than 0";
+            return $tolerance;
+        }
+    }
 }
 ?>
