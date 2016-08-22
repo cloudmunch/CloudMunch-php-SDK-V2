@@ -13,7 +13,7 @@ namespace CloudMunch;
 require_once ("AppErrorLogHandler.php");
 require_once ("CloudmunchConstants.php");
 
-use CloudMunch\Integrations\IntegrationHelper;
+use CloudMunch\Integrations\IntegrationDataHelper;
 use DateTime;
 
 /**
@@ -365,7 +365,7 @@ abstract class AppAbstract {
 	public function getProcessInput() {
 		$cloudservice = null;
 		
-		$integrationHelper = new IntegrationHelper ($this->logHandler);
+		$integrationHelper = new IntegrationDataHelper ($this->logHandler);
 		if ($this->newVer) {
 			if($this->getParameterObject()->providername){
 				//$integrationService = $integrationHelper->getIntegration ( $this->getParameterObject (), $this->appContext->getIntegrations () );
