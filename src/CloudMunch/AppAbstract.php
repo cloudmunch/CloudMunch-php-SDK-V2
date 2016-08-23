@@ -304,6 +304,17 @@ abstract class AppAbstract {
 		return $assethelper;
 	}
 	
+	
+	/**
+	 * This method gives reference to IntegrationHelper,this helper class has all the methods to get/set data on
+	 * integrations registered with cloudmunch.
+	 *
+	 * @return IntegrationHelper integrationhelper
+	 */
+	function getCloudmunchAssetHelper() {
+		$integrationhelper = new IntegrationHelper ( $this->appContext,$this->logHandler );
+		return $integrationhelper;
+	}
 	/**
 	 * This method returns reference to CloudmunchService,this helper class has all the methods to get/set data to cloudmunch service.
 	 * 
