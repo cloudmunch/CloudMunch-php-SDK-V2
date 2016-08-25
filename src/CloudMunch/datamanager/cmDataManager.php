@@ -46,11 +46,11 @@ function getDataForContext($url,$apikey,$querystring) {
 	}else{
 		$url = $url . "?apikey=" . $apikey . "&" . $querystring;
 	}
-	//$this->logHelper->log(DEBUG, $url);
+	
 	$result = $this->do_curl($url, null, "GET", null, null);
 	
 	$result = $result["response"];
-	//$this->logHelper->log(DEBUG, "result:".$result);
+	
 	if (($result == null)) {
 		return false;
 	}
@@ -80,11 +80,11 @@ function downloadGSkey($url,$apikey,$querystring){
 	}else{
 		$url = $url . "?apikey=" . $apikey . "&" . $querystring;
 	}
-	//$this->logHelper->log(DEBUG, $url);
+	
 	$result = $this->do_curl($url, null, "GET", null, null);
 	
 	$result = $result["response"];
-	//$this->logHelper->log(DEBUG, "result:".$result);
+	
 	if (($result == null)) {
 		return false;
 	}
@@ -108,7 +108,7 @@ function downloadGSkey($url,$apikey,$querystring){
 	
 	$dat = $this->json_string($this->json_object($dat));
 	$url = $url."?apikey=".$apikey;
-	//echo "data : " . $dat;
+	
 
 	$result = $this->do_curl($url, null, "POST", $dat, null);
 	
@@ -143,7 +143,7 @@ function updateDataForContext($url,$apikey,$data,$comment = null){
 	
 	$dat=$this->json_string($this->json_object($dat));
 	
-	//echo "data : " . $dat;
+	
 	$url=$url."?apikey=".$apikey;
 
 	$result=$this->do_curl($url, null, "PATCH", $dat, null);
@@ -247,24 +247,17 @@ function updateContext($masterurl, $context, $domain, $serverArray) {
 if(($result === FALSE) && ($response_code != 100)) {
 	$this->logHelper->log(INFO,"result:" . $response_code);
 	trigger_error ( "Error in updating to cloudmunch", E_USER_ERROR );
-}else{
-	//$this->logHelper->log(INFO,"Updated:" . $result);
-	//$this->logHelper->log(INFO,"result:" . $result);
-	//echo "\nresult:" . $result.PHP_EOL;
 }
 
 }
 function updateCustomContext($masterurl, $context, $domain, $serverArray,$id) {
-	//$serverArray=json_encode($serverArray);
-	//	$url =$masterurl . "/cbdata.php?context=".$context."&username=CI&mode=update&domain=".$domain."&data=".$serverArray;
+	
 	global $curl_verbose;
 	$curl_verbose = 0;
 	
 	$data = "data=" . json_encode($serverArray["data"]);
 	$url = $masterurl . "/cbdata.php?action=updatecustomcontext&customcontext=" . $context . "&username=CI&mode=update&domain=" . $domain."&id=".$id;
-	//$url=urlencode($url);
-	//echo "\nurl is:" . $url.PHP_EOL;
-
+	
 	$options = array (
 			CURLOPT_HEADER => 0,
 			CURLOPT_HTTPHEADER => array (
@@ -291,10 +284,6 @@ function updateCustomContext($masterurl, $context, $domain, $serverArray,$id) {
 	if(($result === FALSE) && ($response_code != 100)) {
 		$this->logHelper->log(INFO,"result:" . $response_code);
 		trigger_error ( "Error in updating to cloudmunch", E_USER_ERROR );
-	}else{
-	//	$this->logHelper->log(INFO,"Updated:" . $result);
-	//	$this->logHelper->log(INFO,"result:" . $result);
-		//echo "\nresult:" . $result.PHP_EOL;
 	}
 
 }
@@ -416,14 +405,11 @@ function notifyUsersInCloudmunch($serverurl,$message,$contextarray,$domain){
 	$dataarray=json_encode($contextarray);
 	$dataarray=urlencode($dataarray);
 	$message=urlencode($message);
-	//cbdata.php?action=NOTIFY&to=*&message=whatever message&usercontext={�project�:project name,�job�:jobname,�context�:�servers�,�id�:server name�}
-	//$data = "data=" . json_encode($serverArray);
+	
 	$usercontext = "usercontext=" . $dataarray;
-//	$url = $serverurl . "/cbdata.php?action=NOTIFY&to=*&message=".$message."&usercontext=".$dataarray."&domain=" . $domain."&username=CI";
-	$url = $serverurl . "/cbdata.php?action=NOTIFY&to=*&message=".$message."&domain=" . $domain."&username=CI";
-	//$url=urlencode($url);
-	//echo "\nurl is:" . $url.PHP_EOL;
 
+	$url = $serverurl . "/cbdata.php?action=NOTIFY&to=*&message=".$message."&domain=" . $domain."&username=CI";
+	
 	$options = array (
 		CURLOPT_HEADER => 0,
 		CURLOPT_HTTPHEADER => array (
@@ -449,10 +435,6 @@ function notifyUsersInCloudmunch($serverurl,$message,$contextarray,$domain){
 	$response_code = curl_getinfo($post, CURLINFO_HTTP_CODE);
 	if($result === FALSE) {
 		trigger_error ( "Error in notifying to cloudmunch", E_USER_ERROR );
-	}else{
-		//$this->logHelper->log(INFO,"result:" . $result);
-		//$this->logHelper->log(INFO, "Notification send");
-		//echo "\nresult:" . $result.PHP_EOL;
 	}
 }
 function downloadFile($url, $apikey, $source, $destination = null){
@@ -528,7 +510,7 @@ function do_curl($url, $headers = null, $requestType = null, $data = null, $curl
 		if (!empty($data)) {
 			// strip html tags and post
 			curl_setopt($ch, CURLOPT_POSTFIELDS, preg_replace('@<[\/\!]*?[^<>]*?>@si', '', $this->json_string($data)));
-//			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->json_string($data));
+
 		}
 	}
 
@@ -573,17 +555,9 @@ function do_curl($url, $headers = null, $requestType = null, $data = null, $curl
 		$responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		$headerSent = curl_getinfo($ch, CURLINFO_HEADER_OUT);
 		$msg =  $results;
-	//	$this->logHelper->log("DEBUG", "Request to provider ended.: Details below");
-	//	$this->logHelper->log("DEBUG", str_pad("|-", 120, "-"));
-	//	$this->logHelper->log("INFO", "|URL......... :" . $url);
-	//	$this->logHelper->log("INFO", "|Method...... :" . $requestType);
-	//	$this->logHelper->log("INFO", "|Header sent. :" . $headerSent);
-	//	$this->logHelper->log("INFO", "|Data sent... :" . $this->json_string($data));
-	//	$this->logHelper->log("DEBUG", "|Response code :" . $responseCode);
+	
 		$responseText = $this->startsWith($results, "<") ? $this->html2txt($results) : $results;
-	//	$this->logHelper->log("INFO", "|Response text :" . $responseText);
-	//	$this->logHelper->log("INFO", str_pad("-", 120, "-"));
-	//	$this->logHelper->log("INFO", "Response :" . $responseText);
+	
 	}
 	$responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	$headerSent = curl_getinfo($ch, CURLINFO_HEADER_OUT);
@@ -594,10 +568,7 @@ function do_curl($url, $headers = null, $requestType = null, $data = null, $curl
 		} elseif ($responseCode === 401) {
 			$this->logHelper->log("ERROR", "Interface system url host could not be accessed due to authentication failure");
 		} else {
-		//	$commonMessage = array();
-		//	$commonMessage["503"] = "Service is unavailable now";
-		//	$responseMessage = $this->json_value($commonMessage, $responseCode, "Interface service is experiencing issues");
-			//$this->logHelper->log("ERROR", "Call to  interface ended in error [" . $responseCode . "] " . $responseMessage);
+		
 			$this->logHelper->log("ERROR", "Service is not available");
 		}
 	}

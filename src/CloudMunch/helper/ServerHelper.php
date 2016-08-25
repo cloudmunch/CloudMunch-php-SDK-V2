@@ -44,12 +44,12 @@ use Cloudmunch\CloudmunchConstants;
   */
  function getServer($servername){
  	$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$servername;
- //	$this->logHelper->log(DEBUG,"serverurl from serverhelper:" . $serverurl);
+
  	$deployArray = $this->cmDataManager->getDataForContext($serverurl, $this->appContext->getAPIKey(),null);
 	if($deployArray === false){
 		return false;
 	}
-	//$deployArray = json_decode($deployArray);
+	
 	$detailArray=$deployArray->data;
 	
 	
@@ -98,7 +98,7 @@ use Cloudmunch\CloudmunchConstants;
 			}
 			return $server;
 		
-//	trigger_error("Server does not exist", E_USER_ERROR);
+
 	
  }
  
@@ -115,24 +115,13 @@ use Cloudmunch\CloudmunchConstants;
  		return false;
  	}
  	$statusconArray=array(STATUS_RUNNING,STATUS_STOPPED,STATUS_NIL);
- 	if(in_array ( $serverstatus ,$statusconArray )){
- 	
- 	}else{
+ 	if(!in_array ( $serverstatus ,$statusconArray )){
  		$this->logHelper->log (ERROR, "Invalid status");
  		return false;
  	}
  	
  	
-	/* $serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$servername;
- 	loghandler(INFO,"serverurl from serverhelper:" . $serverurl);
- 	$deployArray = $this->cmDataManager->getDataForContext($serverurl, $this->appContext->getAPIKey());
 	
-	$deployArray = json_decode($deployArray);
-	$detailArray=$deployArray->data;
-	
-	if ($deployArray == null) {
-		$deployArray = array ();
-	} */
 	$dataArray = array (
 	
 		"description" => $server->getDescription(),
@@ -146,7 +135,7 @@ use Cloudmunch\CloudmunchConstants;
 		"username" => $server->getLauncheduser(),
 		"build" => $server->getBuild(),
 		"appName" =>$server->getAppName(),
-		"deployTempLoc" => $server->getDeployTempLoc(), //need to check
+		"deployTempLoc" => $server->getDeployTempLoc(), 
 		"buildLoc" => $server->getBuildLocation(),
 		"privateKeyLoc" => $server->getPrivateKeyLoc(),
 		"publicKeyLoc" => $server->getPublicKeyLoc(),
@@ -199,7 +188,7 @@ use Cloudmunch\CloudmunchConstants;
 		"username" => $server->getLauncheduser(),
 		"build" => $server->getBuild(),
 		"appName" =>$server->getAppName(),
-		"deployTempLoc" => $server->getDeployTempLoc(), //need to check
+		"deployTempLoc" => $server->getDeployTempLoc(), 
 	"buildLoc" => $server->getBuildLocation(),
 		"privateKeyLoc" => $server->getPrivateKeyLoc(),
 		"publicKeyLoc" => $server->getPublicKeyLoc(),
@@ -248,7 +237,7 @@ use Cloudmunch\CloudmunchConstants;
 	if($deployArray === false){
 		return false;
 	}
-	//$deployArray = json_decode($deployArray);
+	
 	$detailArray=$deployArray->data;
 
 	if ($detailArray == null) {
@@ -293,20 +282,7 @@ function checkConnect($dns,$sshport = 22) {
 	}
 }
  
- function checkConnectionToServer($servername){
- 	
- }
+
  
- function getConnectionToServer($servername){
- 	
- 	
- }
- /**
-  * This method returns SSHConnection helper
-  * @return \CloudMunch\sshConnection
-  */
- function getSSHConnectionHelper(){
- 	return new SSHConnection();
- }
  }
 ?>

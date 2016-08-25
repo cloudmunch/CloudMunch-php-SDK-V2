@@ -303,7 +303,7 @@ class EnvironmentHelper {
 					$roleID = $new_role_details->id;
 				}
 				$this->logHelper->log ( INFO,"Role id is:".$roleID);
-			//	$roleID = $defaultRoleDetails [0]->id;
+			
 				$data = array (
 						'tiers' => array (
 								$roleID => array (
@@ -422,7 +422,7 @@ class EnvironmentHelper {
 		$assetthelper = new AssetHelper ( $this->appContext, $this->logHelper );
 		$assetsDetail = array ();
 		foreach ( $assetNames as $assetName ) {
-			//$this->logHelper->log ( DEBUG, "Retrieve asset:" . $assetName );
+			
 			$data = $assetthelper->getAsset ( $assetName, null );
 			array_push ( $assetsDetail, $data );
 		}
@@ -435,7 +435,7 @@ class EnvironmentHelper {
 	 *        	Deletes the given asset from environment
 	 */
 	function deleteAsset($environmentID, $assetID) {
-		//$this->logHelper->log ( INFO, "Asset id:" . $assetID );
+		
 		$envdetails = $this->getEnvironment ( $environmentID, null );
 		$tiers = $envdetails->tiers;
 		
@@ -448,19 +448,7 @@ class EnvironmentHelper {
 				$tiers->{$tier}->assets = $tierdetail->assets;
                         }
 		}
-		/*foreach ( $tiers as $tier ) {
-			foreach ( $tier as $key => $value ) {
-				$assets = $value->assets;
-				if (($key = array_search ( $assetID, $assets )) !== false) {
-					unset ( $assets [$key] );
-					//$this->logHelper->log ( INFO, "Tier unset:" . $tier );
-					$value->assets = $assets;
-					
-					//$this->logHelper->log ( INFO, "Assets unset" );
-				}
-				
-			}
-		}*/
+		
 		$data = array (
 				"tiers" => $tiers 
 		);

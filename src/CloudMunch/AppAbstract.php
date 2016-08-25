@@ -12,7 +12,7 @@ namespace CloudMunch;
 
 
 require_once ("CloudmunchConstants.php");
-require_once ("AppErrorLogHandler.php");
+require_once ("loghandling/AppErrorLogHandler.php");
 use CloudMunch\Integrations\IntegrationDataHelper;
 use CloudMunch\helper\AssetHelper;
 use CloudMunch\helper\EnvironmentHelper;
