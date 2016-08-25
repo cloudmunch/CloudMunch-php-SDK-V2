@@ -8,6 +8,7 @@
  *  Rosmi Chandy rosmi@cloudmunch.com 09-Feb-2015
  */
 namespace CloudMunch\Integrations;
+use CloudMunch\loghandling\LogHandler;
 
 /**
  * This helper file process the cloudproviders input to get the selected provider details.
@@ -35,16 +36,14 @@ namespace CloudMunch\Integrations;
 		$cloudproviders=json_decode($cloudproviders);
 		$arg1 = 'providername';
 		$provname = $jsonParams-> $arg1;
-		//$this->logHelper->log(DEBUG, "Provider Name: ".$provname);
+		
 	    $provtype="providerType";
 	    
 	   
 	    if(($provname != null) && (strlen(trim($provname))>0)){
 	    $regfields=$cloudproviders->$provname;
 	    
-	   // $integration= file_get_contents("integration.json");
-	   // $integration=json_decode($integration);
-	  // $regfields= $integration->$type->registrationFields;
+	  
 	   $integrationdetails=array();
 	    foreach ($regfields as $key=>$value){
 	    	$integrationdetails[$key]=$value;
@@ -61,13 +60,11 @@ namespace CloudMunch\Integrations;
  		$arg1 = 'providername';
  		$provname = $jsonParams-> $arg1;
  		
- 	//	$this->logHelper->log(DEBUG, "Provider Name: ".$provname);
- 		
- 		
+ 	
  		if(($provname != null) && (strlen(trim($provname))>0)){
- 			//$tpe="type";
+ 			
  			$conf="configuration";
- 			//$type=$integrations->$provname->$tpe;
+ 			
  			$regfields=$integrations->$provname->$conf;
  			$integrationdetails=array();
  			foreach ($regfields as $key=>$value){

@@ -9,11 +9,15 @@
  *  Rosmi Chandy rosmi@cloudmunch.com
  */
 
-namespace CloudMunch;
+namespace CloudMunch\helper;
 
 use \DateTime;;
-require_once 'CloudmunchConstants.php';
-require_once 'AppErrorLogHandler.php';
+use CloudMunch\datamanager\cmDataManager;
+use CloudMunch\AppContext;
+use CloudMunch\loghandling\LogHandler;
+use CloudMunch\CloudmunchService;
+use Cloudmunch\CloudmunchConstants;
+
 
 /**
  * This is a helper class for environments. User can manage environments in cloudmunch using this helper.

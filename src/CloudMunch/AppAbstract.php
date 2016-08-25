@@ -10,10 +10,18 @@
  */
 namespace CloudMunch;
 
-require_once ("AppErrorLogHandler.php");
-require_once ("CloudmunchConstants.php");
 
+require_once ("CloudmunchConstants.php");
+require_once ("AppErrorLogHandler.php");
 use CloudMunch\Integrations\IntegrationDataHelper;
+use CloudMunch\helper\AssetHelper;
+use CloudMunch\helper\EnvironmentHelper;
+use CloudMunch\helper\InsightHelper;
+use CloudMunch\helper\IntegrationHelper;
+use CloudMunch\helper\NotificationHandler;
+use CloudMunch\helper\RoleHelper;
+use CloudMunch\helper\ServerHelper;
+use CloudMunch\loghandling\LogHandler;
 use DateTime;
 
 /**

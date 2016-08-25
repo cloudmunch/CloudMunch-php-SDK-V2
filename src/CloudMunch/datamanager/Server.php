@@ -1,37 +1,65 @@
 <?php
-namespace CloudMunch;
-//require_once "Server.php";
-use CloudMunch\Server;
-/*
- * Created on 20-Feb-2015
+/**
+ *  (c) CloudMunch Inc.
+ *  All Rights Reserved
+ *  Un-authorized copying of this file, via any medium is strictly prohibited
+ *  Proprietary and confidential
  *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
+ *  Rosmi Chandy rosmi@cloudmunch.com
  */
-class ElasticBeanStalkServer extends Server{
+namespace CloudMunch\datamanager;
+
+/**
+ * This class is to create server object ,that holds the data about a server.
+ */
+class Server{
 		
+	private $description="";
+	private $dns="";
+	private $domainName="";
+	private $emailID="";
+	private $CI="";
+	private $deploymentStatus="";
+	private $instanceId="";
+	private $imageID="";
+	private $launcheduser="";
+	private $build="";
+	private $appName="";
+	private $deployTempLoc="";
+	private $buildLocation="";
+	private $privateKeyLoc="";
+	private $publicKeyLoc="";
+	private $loginUser="";
+	private $serverType="";
+	private $assettype="";
+	private $status="";
+	private $starttime="";
+	private $provider="";
+	private $region="";
+	private $cmserver="";
+	private $assetname="";
+	private $instancesize="";
+	private $servername="";
+	private $password=null;
+	private $sshport=22;
+	private $tier="";
 	
+	function getTier(){
+		return $this->tier;
+	}
 	
-	private $bucketname ="";
-	private $applicationName = "";
-	private $templateName = "";
-	private $envname = "";
-	//private $region="";
-	//private $appName="";
-	//private $provider="";
-	//private $dns="";
+	function setTier($tier){
+		$this->tier=$tier;
+	}
 	
-	//private $cmserver="";
-	//private $assetname="";
-	//private $description="";
-	//private $assettype="";
-	//private $deployTempLoc="";
-	
-	//private $status="";
-	//private $starttime="";
-	
-	//private $servername="";
-	
+	function getSSHPort(){
+		return $this->sshport;
+	}
+
+	function setSSHPort($port){
+		$this->sshport=$port;
+	}
+
 	function getServerName(){
 		return $this->servername;
 	}
@@ -39,43 +67,6 @@ class ElasticBeanStalkServer extends Server{
 	function setServerName($name){
 		
 		$this->servername=$name;
-	}
-	
-	
-	function getEnvironmentName(){
-		return $this->envname;
-	}
-	
-	function setEnvironmentName($name){
-		
-		$this->envname=$name;
-	}
-	
-	function getBucketName(){
-		return $this->bucketname;
-	}
-	
-	function setBucketName($name){
-		
-		$this->bucketname=$name;
-	}
-	
-	function getApplicationName(){
-		return $this->applicationName;
-	}
-	
-	function setApplicationName($name){
-		
-		$this->applicationName=$name;
-	}
-	
-	function getTemplateName(){
-		return $this->templateName;
-	}
-	
-	function setTemplateName($name){
-		
-		$this->templateName=$name;
 	}
 	
 	/**
@@ -105,8 +96,26 @@ class ElasticBeanStalkServer extends Server{
 		$this->dns=$dns;
 		
 	}
-	
-	/*function getInstanceId(){
+	function getDomainName(){
+		return $this->domainName;
+	}
+	function setDomainName($dname){
+		$this->domainName=$dname;
+		
+	}
+	function getCI(){
+		return $this->CI;
+	}
+	function setCI($ci){
+		$this->CI=$ci;
+	}
+	function getDeploymentStatus(){
+		return $this->deploymentStatus;
+	}
+	function setDeploymentStatus($ds){
+		$this->deploymentStatus=$ds;
+	}
+	function getInstanceId(){
 		return $this->instanceId;
 	}
 	function setInstanceId($instid){
@@ -129,7 +138,7 @@ class ElasticBeanStalkServer extends Server{
 	}
 	function setBuild($bld){
 		$this->build=$bld;
-	}*/
+	}
 	function getAppName(){
 		return $this->appName;
 	}
@@ -142,7 +151,7 @@ class ElasticBeanStalkServer extends Server{
 	function setDeployTempLoc($deptemp){
 		$this->deployTempLoc=$deptemp;
 	}
-	/*function getBuildLocation(){
+	function getBuildLocation(){
 		return $this->buildLocation;
 		
 	}
@@ -150,8 +159,32 @@ class ElasticBeanStalkServer extends Server{
 		$this->buildLocation=$bloc;
 		
 	}
-	*/
-	
+	function getPrivateKeyLoc(){
+		return $this->privateKeyLoc;
+	}
+	function setPrivateKeyLoc($pkey){
+		$this->privateKeyLoc=$pkey;
+	}
+	function getPublicKeyLoc(){
+		return $this->publicKeyLoc;
+	}
+	function setPublicKeyLoc($ploc){
+		$this->publicKeyLoc=$ploc;
+		
+	}
+	function getLoginUser(){
+		return $this->loginUser;
+	}
+	function setLoginUser($luser){
+		$this->loginUser=$luser;
+	}
+	function getServerType(){
+		return $this->serverType;
+	}
+	function setServerType($stype){
+		 $this->serverType=$stype;
+		
+	}
 	function getAssettype(){
 		return $this->assettype;
 	}
@@ -194,7 +227,7 @@ class ElasticBeanStalkServer extends Server{
 	function setAssetname($aname){
 		$this->assetname=$aname;
 	}
-	/*function getInstancesize(){
+	function getInstancesize(){
 		return $this->instancesize;
 	}
 	function setInstancesize($isize){
@@ -205,8 +238,14 @@ class ElasticBeanStalkServer extends Server{
 	}
 	function setEmailID($eid){
 		$this->emailID=$eid;
-	}*/
-} 
- 
- 
+	}
+	function getPassword(){
+		return $this->password;
+	}
+	function setPassword($eid){
+		$this->password=$eid;
+	}
+	
+}
+	
 ?>

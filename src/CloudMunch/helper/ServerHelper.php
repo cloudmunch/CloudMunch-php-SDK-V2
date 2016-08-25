@@ -7,16 +7,16 @@
  *
  *  Rosmi Chandy rosmi@cloudmunch.com
  */
-namespace CloudMunch;
+namespace CloudMunch\helper;
 
 
-use CloudMunch\cmDataManager;
-use CloudMunch\SSHConnection;
-use CloudMunch\Server;
-use CloudMunch\ElasticBeanStalkServer;
+use CloudMunch\datamanager\cmDataManager;
+use CloudMunch\AppContext;
+use CloudMunch\loghandling\LogHandler;
+use CloudMunch\datamanager\Server;
+use CloudMunch\datamanager\ElasticBeanStalkServer;
+use Cloudmunch\CloudmunchConstants;
 
-require_once ("CloudmunchConstants.php");
-require_once ("AppErrorLogHandler.php");
 
 
  

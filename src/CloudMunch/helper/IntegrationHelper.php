@@ -7,14 +7,14 @@
  *
  *  Rosmi Chandy rosmi@cloudmunch.com
  */
-namespace CloudMunch;
+namespace CloudMunch\helper;
 
 
-use CloudMunch\cmDataManager;
-use CloudMunch\SSHConnection;
 
-require_once ("CloudmunchConstants.php");
-require_once ("AppErrorLogHandler.php");
+use CloudMunch\datamanager\cmDataManager;
+use CloudMunch\AppContext;
+use CloudMunch\loghandling\LogHandler;
+
 
 
 /**

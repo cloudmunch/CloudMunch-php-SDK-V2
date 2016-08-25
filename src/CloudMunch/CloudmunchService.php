@@ -10,9 +10,10 @@
  */
 namespace CloudMunch;
 
-use CloudMunch\cmDataManager;
-// require_once ("cmDataManager.php");
-require_once ("AppErrorLogHandler.php");
+use CloudMunch\datamanager\cmDataManager;
+use CloudMunch\AppContext;
+use CloudMunch\loghandling\LogHandler;
+
 
 /**
  * Class CloudmunchService
@@ -113,8 +114,7 @@ class CloudmunchService {
 			$this->logHelper->log ( ERROR, "Data needs to be provided to update a context" );
 			return false;
 		}
-		//echo "inside update context data";
-		//var_dump($contextArray);
+		
 
 		if (is_array($contextArray) && count($contextArray) > 0) {
 			$serverurl = $this->appContext->getMasterURL()."/applications/".$this->appContext->getProject();
@@ -142,7 +142,6 @@ class CloudmunchService {
 			return false;
 		}
 
-		//var_dump($retArray);
 		return $retArray->data;
 	}
 
@@ -154,8 +153,7 @@ class CloudmunchService {
 	 */
 	public function getCustomContextData($contextArray, $queryParams){
 		$querystring = "";
-		//echo "inside get context data";
-		//var_dump($contextArray);
+		
 		if (is_array($contextArray) && count($contextArray) > 0){
 			$serverurl = $this->appContext->getMasterURL()."/applications/".$this->appContext->getProject();
 			
@@ -189,8 +187,7 @@ class CloudmunchService {
 			$this->logHelper->log ( ERROR, "First parameter is expected to be an array with key value pairs" );
 			return false;
 		}
-		//echo "\nserverurl : $serverurl\n";
-		//echo "\nquerystring : $querystring\n";
+	
 		$dataArray = $this->cmDataManager->getDataForContext($serverurl, $this->appContext->getAPIKey(),$querystring);
 		
 		if($dataArray == false){
@@ -198,8 +195,7 @@ class CloudmunchService {
 			return false;
 		}
 		
-		//var_dump($dataArray);
-
+	
 		return $dataArray->data;
 		
 	}
@@ -224,7 +220,7 @@ class CloudmunchService {
 			return false;
 		}
 		
-		//$assetArray = json_decode($assetArray);
+		
 		$data=$dataArray->data;
 		if($data == null){
 			$this->logHelper->log (ERROR, "Data does not exist" );
@@ -352,7 +348,7 @@ class CloudmunchService {
 
 		$filename = "keyfile" . rand ();
 		$this->appContext->getWorkSpaceLocation ();
-		// echo $filename;
+		
 		$file = $this->appContext->getWorkSpaceLocation () . "/" . $filename;
 		file_put_contents ( $file, $keyString );
 		system ( 'chmod 400 ' . $file, $retval );

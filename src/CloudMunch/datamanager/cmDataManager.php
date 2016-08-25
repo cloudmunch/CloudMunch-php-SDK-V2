@@ -7,9 +7,12 @@
  *
  *  Rosmi Chandy rosmi@cloudmunch.com
  */
-namespace CloudMunch;
-use CloudMunch\NotificationHandler;
-require_once ("AppErrorLogHandler.php");
+namespace CloudMunch\datamanager;
+
+use CloudMunch\helper\NotificationHandler;
+use CloudMunch\AppContext;
+use CloudMunch\loghandling\LogHandler;
+//require_once ("AppErrorLogHandler.php");
 
 
  /**

@@ -8,11 +8,12 @@
  *
  *  Amith Kumar amith@cloudmunch.com
  */
-namespace CloudMunch;
+namespace CloudMunch\helper;
 
-use CloudMunch\cmDataManager;
-require_once ("AppErrorLogHandler.php");
-
+use CloudMunch\datamanager\cmDataManager;
+use CloudMunch\AppContext;
+use CloudMunch\loghandling\LogHandler;
+use Cloudmunch\CloudmunchConstants;
 /**
  * Class CloudmunchService
  * 

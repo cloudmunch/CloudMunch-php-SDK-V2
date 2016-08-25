@@ -6,8 +6,8 @@
  *  Proprietary and confidential
  */
 
-namespace CloudMunch;
-
+namespace CloudMunch\loghandling;
+use CloudMunch\AppContext;
 /** 
  *  Display message based on log level set in app context
  *		LogLevel             Message Types displayed
