@@ -370,7 +370,7 @@ abstract class AppAbstract {
 	 * data.
 	 */
 	public function initialize() {
-		//$this->loghandler ( INFO, "App execution started" );
+		date_default_timezone_set('UTC');
 		$date_a = new DateTime ();
 		$this->stime = $date_a;
 		$this->getInput ();
