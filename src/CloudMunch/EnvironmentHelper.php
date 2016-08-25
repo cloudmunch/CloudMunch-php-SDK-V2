@@ -117,7 +117,7 @@ class EnvironmentHelper {
 		);
 		;
 		if (in_array ( $environmentStatus, $statusconArray )) {
-		} else {
+		
 			$this->logHelper->log ( DEBUG, "Invalid status provided, valid values are " . STATUS_CREATION_IN_PROGRESS . ", " . STATUS_RUNNING . ", " . STATUS_STOPPED . ", " . STATUS_ACTION_IN_PROGRESS . ", " . STATUS_RUNNING_WITH_WARNINGS . " and " . STATUS_STOPPED_WITH_ERRORS );
 			return false;
 		}
@@ -365,8 +365,8 @@ class EnvironmentHelper {
 				STATUS_ACTION_IN_PROGRESS 
 		);
 		
-		if (in_array ( $status, $statusconArray )) {
-		} else {
+		if (!in_array ( $status, $statusconArray )) {
+		
 			$this->logHelper->log ( DEBUG, "Invalid status provided, valid values are " . STATUS_CREATION_IN_PROGRESS . ", " . STATUS_RUNNING . ", " . STATUS_STOPPED . ", " . STATUS_ACTION_IN_PROGRESS . ", " . STATUS_RUNNING_WITH_WARNINGS . " and " . STATUS_STOPPED_WITH_ERRORS );
 			return false;
 		}

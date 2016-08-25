@@ -78,9 +78,9 @@ function  addAsset($assetname,$assettype,$assetStatus,$assetExternalRef,$assetDa
 		return false;
 	}
 	$statusconArray = array(STATUS_RUNNING,STATUS_STOPPED,STATUS_NIL);
-	if(in_array ( $assetStatus ,$statusconArray )){
+	if(!in_array ( $assetStatus ,$statusconArray )){
 		
-	}else{
+	
 		$this->logHelper->log ( ERROR, "Invalid status sent. Allowed values " . STATUS_RUNNING,STATUS_STOPPED,STATUS_NIL);
 		return false;
 	}
@@ -130,9 +130,8 @@ function deleteAsset($assetID){
  */
 function updateStatus($assetID,$status){
 	$statusconArray=array(STATUS_RUNNING,STATUS_STOPPED,STATUS_NIL);
-	if(in_array ( $status ,$statusconArray )){
+	if(!in_array ( $status ,$statusconArray )){
 	
-	}else{
 		$this->logHelper->log (ERROR, "Invalid status");
 		return false;
 	}

@@ -59,6 +59,7 @@ class LogHandler{
 			date_default_timezone_set('UTC');
 			$date = date('Y-m-d H:i:s');
 		} catch (Exception $se) {
+			echo "Exception :".$se->getMessage();
 		}
 		$stepname = $this->appContext->getStepName();
 		switch ($msgNo) {

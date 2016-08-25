@@ -311,7 +311,7 @@ abstract class AppAbstract {
 	 *
 	 * @return IntegrationHelper integrationhelper
 	 */
-	function getCloudmunchAssetHelper() {
+	function getCloudmunchIntegrationHelper() {
 		$integrationhelper = new IntegrationHelper ( $this->appContext,$this->logHandler );
 		return $integrationhelper;
 	}
@@ -379,7 +379,7 @@ abstract class AppAbstract {
 		$integrationHelper = new IntegrationDataHelper ($this->logHandler);
 		if ($this->newVer) {
 			if($this->getParameterObject()->providername){
-				//$integrationService = $integrationHelper->getIntegration ( $this->getParameterObject (), $this->appContext->getIntegrations () );
+				
 				$this->logHandler->log ( INFO, "Getting integration" );
 				$integrationService = $integrationHelper->getIntegrationData ($this->getCloudmunchService(), $this->getParameterObject ());
 			    if(is_null($integrationService)){
@@ -402,9 +402,8 @@ abstract class AppAbstract {
 	 */
 	public function performAppcompletion() {
 		$this->logHandler->log ( INFO, "Performing cleanup" );
-		if (is_null ( $this->cloudmunchService )) {
-		}else{	
-		$this->cloudmunchService->deleteKeys ();
+		if (!(is_null ( $this->cloudmunchService ))) {
+			$this->cloudmunchService->deleteKeys ();
 		}
 		$this->logHandler->log ( INFO, "App execution completed!" );
 		$date_b = new DateTime ();
@@ -428,7 +427,7 @@ abstract class AppAbstract {
 
 		if ($this->newVer) {
 			$fileloc = $this->appContext->getReportsLocation () . "/" . $this->appContext->getStepID () . ".out";
-			$varlist == null;
+			$varlist = null;
 			if(file_exists($fileloc)){
 			$varlist = file_get_contents ( $fileloc );
 			}
@@ -480,7 +479,7 @@ abstract class AppAbstract {
 
 		if ($this->newVer) {
 			$fileloc = $this->appContext->getReportsLocation () . "/" . $this->appContext->getStepID () . ".out";
-			$varlist == null;
+			$varlist = null;
 			if(file_exists($fileloc)){
 			$varlist = file_get_contents ( $fileloc );
 			}

@@ -40,7 +40,7 @@ class Server{
 	private $assetname="";
 	private $instancesize="";
 	private $servername="";
-	private $password="";
+	private $password=null;
 	private $sshport=22;
 	private $tier="";
 	
