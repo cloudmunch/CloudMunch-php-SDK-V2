@@ -10,7 +10,7 @@
  */
 namespace CloudMunch;
 
-use CloudMunch\datamanager\cmDataManager;
+use CloudMunch\datamanager\CMDataManager;
 use CloudMunch\AppContext;
 use CloudMunch\loghandling\LogHandler;
 
@@ -30,7 +30,7 @@ class CloudmunchService {
 	public function __construct($appContext,$logHandler) {
 		$this->appContext = $appContext;
 		$this->logHelper=$logHandler;
-		$this->cmDataManager = new cmDataManager ($this->logHelper, $this->appContext);
+		$this->cmDataManager = new CMDataManager ($this->logHelper, $this->appContext);
 	}
 	/**
 	 * This method is to send notification on a selected channel
@@ -190,7 +190,7 @@ class CloudmunchService {
 	
 		$dataArray = $this->cmDataManager->getDataForContext($serverurl, $this->appContext->getAPIKey(),$querystring);
 		
-		if($dataArray == false){
+		if(is_bool ($dataArray ) && !$dataArray){
 			$this->logHelper->log ( ERROR, "Could not retreive data from cloudmunch" );
 			return false;
 		}
@@ -209,13 +209,13 @@ class CloudmunchService {
 	 */
 	public function getCloudmunchData($context,$contextid,$filterdata){
 		$querystring="";
-		if($filerdata !== null){
-			$querystring="filter=".json_encode($filerdata);
+		if($filterdata !== null){
+			$querystring="filter=".json_encode($filterdata);
 		}
 		$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/".$context."/".$contextid;
 		
 		$dataArray = $this->cmDataManager->getDataForContext($serverurl, $this->appContext->getAPIKey(),$querystring);
-		if($dataArray == false){
+		if(is_bool ($dataArray ) && !$dataArray){
 			$this->logHelper->log ( ERROR, "Could not retreive data from cloudmunch" );
 			return false;
 		}
@@ -250,8 +250,7 @@ class CloudmunchService {
 			return false;
 		}
 
-		$retdata  = $retArray->data;
-		return $retdata;
+		return $retArray->data;
 	}
 	
 	/**
@@ -270,8 +269,8 @@ class CloudmunchService {
 			return false;
 		}
 
-		$retdata=$retArray->data;
-		return $retdata;
+		
+		return $retArray->data;
 	}
 	
 	/**
@@ -296,7 +295,7 @@ class CloudmunchService {
 	 * @return string location of the downloaded file
 	 */
 	public function downloadGCRKeys($filekey, $context, $contextid) {
-		$url = $serverurl = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/" . $context . "/" . $contextid;
+		$url = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/" . $context . "/" . $contextid;
 		$querystring = "file=" . $filekey;
 	
 		$keyString = $this->cmDataManager->downloadGSkey ( $url, $this->appContext->getAPIKey (), $querystring );
@@ -314,7 +313,7 @@ class CloudmunchService {
 	
 		$filename = "keyfile" . rand ();
 		$this->appContext->getWorkSpaceLocation ();
-		// echo $filename;
+		
 		$file = $this->appContext->getWorkSpaceLocation () . "/" . $filename;
 		file_put_contents ( $file, $keyString );
 		system ( 'chmod 400 ' . $file, $retval );
@@ -330,7 +329,7 @@ class CloudmunchService {
 	 * @return string location of the downloaded file
 	 */
 	public function downloadKeys($filekey, $context, $contextid) {
-		$url = $serverurl = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/" . $context . "/" . $contextid;
+		$url =  $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/" . $context . "/" . $contextid;
 		$querystring = "file=" . $filekey;
 		
 		$keyString = $this->cmDataManager->getDataForContext ( $url, $this->appContext->getAPIKey (), $querystring );

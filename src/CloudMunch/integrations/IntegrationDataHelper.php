@@ -7,7 +7,7 @@
  *
  *  Rosmi Chandy rosmi@cloudmunch.com 09-Feb-2015
  */
-namespace CloudMunch\Integrations;
+namespace CloudMunch\integrations;
 use CloudMunch\loghandling\LogHandler;
 
 /**
@@ -37,7 +37,7 @@ use CloudMunch\loghandling\LogHandler;
 		$arg1 = 'providername';
 		$provname = $jsonParams-> $arg1;
 		
-	    $provtype="providerType";
+	   
 	    
 	   
 	    if(($provname != null) && (strlen(trim($provname))>0)){
@@ -56,29 +56,7 @@ use CloudMunch\loghandling\LogHandler;
  		
  	}
  	
- 	function getIntegration($jsonParams,$integrations){
- 		$arg1 = 'providername';
- 		$provname = $jsonParams-> $arg1;
- 		
- 	
- 		if(($provname != null) && (strlen(trim($provname))>0)){
- 			
- 			$conf="configuration";
- 			
- 			$regfields=$integrations->$provname->$conf;
- 			$integrationdetails=array();
- 			foreach ($regfields as $key=>$value){
- 				$integrationdetails[$key]=$value;
- 			
- 			}
- 			return $integrationdetails;
- 		
- 		}else{
- 			return null;
- 		}
- 		
- 	}
- 	
+ 
  	function getIntegrationData($cloudmunchservice,$jsonParams){
  		$arg1 = 'providername';
  		$provname = $jsonParams-> $arg1;

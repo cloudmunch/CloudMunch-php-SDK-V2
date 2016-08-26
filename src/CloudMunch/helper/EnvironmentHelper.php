@@ -9,7 +9,7 @@
  * Rosmi Chandy rosmi@cloudmunch.com
  */
 namespace CloudMunch\helper;
-use CloudMunch\datamanager\cmDataManager;
+use CloudMunch\datamanager\CMDataManager;
 use CloudMunch\AppContext;
 use CloudMunch\loghandling\LogHandler;
 use Cloudmunch\CloudmunchConstants;
@@ -27,7 +27,7 @@ class EnvironmentHelper {
 	public function __construct($appContext, $logHandler) {
 		$this->appContext = $appContext;
 		$this->logHelper = $logHandler;
-		$this->cmDataManager = new cmDataManager ( $this->logHelper, $appContext );
+		$this->cmDataManager = new CMDataManager ( $this->logHelper, $appContext );
 		$this->roleHelper = new RoleHelper ( $appContext, $this->logHelper );
 	}
 	

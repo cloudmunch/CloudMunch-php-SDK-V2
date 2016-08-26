@@ -12,14 +12,17 @@ namespace CloudMunch\datamanager;
 use CloudMunch\helper\NotificationHandler;
 use CloudMunch\AppContext;
 use CloudMunch\loghandling\LogHandler;
-//require_once ("AppErrorLogHandler.php");
+
 
 
  /**
   * This class  connects to cloudmunch to update /retrieve data
   */
 
-class cmDataManager{
+class CMDataManager{
+	const RESPONSE="response";
+	const SUCCESS ="SUCCESS";
+	const REQUESTID="Request ID";
 	private $logHelper=null;
 	private $appContext=null;
 	private $notificationHandler;
@@ -49,7 +52,7 @@ function getDataForContext($url,$apikey,$querystring) {
 	
 	$result = $this->do_curl($url, null, "GET", null, null);
 	
-	$result = $result["response"];
+	$result = $result[self::RESPONSE];
 	
 	if (($result == null)) {
 		return false;
@@ -61,11 +64,11 @@ function getDataForContext($url,$apikey,$querystring) {
 		return $result;
 	}
 	
-	if((!empty($resultdecode->request->status))&&($resultdecode->request->status !== "SUCCESS")) {
+	if((!empty($resultdecode->request->status))&&($resultdecode->request->status !== self::SUCCESS)) {
      	$this->logHelper->log(ERROR, $resultdecode->request->message);
 		if($resultdecode->request->request_id) {
-			$this->logHelper->log(ERROR,"Request ID : " . $resultdecode->request->request_id);
-			$this->notificationHandler->sendSlackNotification($resultdecode->request->message.". Request ID : ".$resultdecode->request->request_id);
+			$this->logHelper->log(ERROR,self:REQUESTID." : " . $resultdecode->request->request_id);
+			$this->notificationHandler->sendSlackNotification($resultdecode->request->message.".". self::REQUESTID." : ".$resultdecode->request->request_id);
 		}
 		return false;
 	}
@@ -83,7 +86,7 @@ function downloadGSkey($url,$apikey,$querystring){
 	
 	$result = $this->do_curl($url, null, "GET", null, null);
 	
-	$result = $result["response"];
+	$result = $result[self::RESPONSE];
 	
 	if (($result == null)) {
 		return false;
@@ -112,15 +115,15 @@ function downloadGSkey($url,$apikey,$querystring){
 
 	$result = $this->do_curl($url, null, "POST", $dat, null);
 	
-	$result = $result["response"];
+	$result = $result[self::RESPONSE];
 	$result = json_decode($result);
 	
-     if(($result==null) ||($result->request->status !== "SUCCESS")){
+     if(($result==null) ||($result->request->status !== self::SUCCESS)){
      	$this->logHelper->log(ERROR, $result->request->message);
      	$this->logHelper->log (ERROR,"Not able to post data to cloudmunch");
 		if($result->request->request_id) {
-			$this->logHelper->log(ERROR,"Request ID : " . $result->request->request_id);
-			$this->notificationHandler->sendSlackNotification($result->request->message.". Request ID : ".$result->request->request_id);
+			$this->logHelper->log(ERROR,self::REQUESTID." : " . $result->request->request_id);
+			$this->notificationHandler->sendSlackNotification($result->request->message.". ".self::REQUESTID." : ".$result->request->request_id);
 		}
      	return false;
      }
@@ -148,15 +151,15 @@ function updateDataForContext($url,$apikey,$data,$comment = null){
 
 	$result=$this->do_curl($url, null, "PATCH", $dat, null);
 	
-	$result=$result["response"];
+	$result=$result[self::RESPONSE];
 	$result=json_decode($result);
 	
-     if(($result==null) ||($result->request->status !== "SUCCESS")){
+     if(($result==null) ||($result->request->status !== self::SUCCESS)){
      	$this->logHelper->log(ERROR, $result->request->message);
      	$this->logHelper->log (ERROR,"Not able to patch data to cloudmunch");
 		if($result->request->request_id) {
-			$this->logHelper->log(ERROR,"Request ID : " . $result->request->request_id);
-			$this->notificationHandler->sendSlackNotification($result->request->message.". Request ID : ".$result->request->request_id);
+			$this->logHelper->log(ERROR,self::REQUESTID." : " . $result->request->request_id);
+			$this->notificationHandler->sendSlackNotification($result->request->message.". ".self::REQUESTID." : ".$result->request->request_id);
 		}
      	return false;
      }
@@ -167,13 +170,13 @@ function updateDataForContext($url,$apikey,$data,$comment = null){
 function deleteDataForContext($url,$apikey){
 	$url=$url."?apikey=".$apikey;
 	$result=$this->do_curl($url, null, "DELETE", null, null);
-	$result=$result["response"];
+	$result=$result[self::RESPONSE];
 	$result=json_decode($result);
-	if(($result==null) ||($result->request->status!="SUCCESS")      ){
+	if(($result==null) ||($result->request->status!=self::SUCCESS)      ){
      	$this->logHelper->log(ERROR, $result->request->message);
      	$this->logHelper->log (ERROR,"Not able to put data to cloudmunch");
 		if($result->request->request_id) {
-			$this->logHelper->log(ERROR,"Request ID : " . $result->request->request_id);
+			$this->logHelper->log(ERROR,self::REQUESTID." : " . $result->request->request_id);
 		}
      	return false;
 	}
@@ -211,16 +214,12 @@ function startDeployAction($servername, $project, $job_from_which_deploy_trigger
 }
 
 function updateContext($masterurl, $context, $domain, $serverArray) {
-	//$serverArray=json_encode($serverArray);
-	//	$url =$masterurl . "/cbdata.php?context=".$context."&username=CI&mode=update&domain=".$domain."&data=".$serverArray;
-	// global $curl_verbose;
+	
 	$curl_verbose = 0;
-	//var_dump($serverArray);
+	
 	$data = "data=" . json_encode($serverArray);
 	$url = $masterurl . "/cbdata.php?context=" . $context . "&username=CI&mode=update&domain=" . $domain;
-	//$url=urlencode($url);
-	//echo "\nurl is:" . $url.PHP_EOL;
-
+	
 	$options = array (
 		CURLOPT_HEADER => 0,
 		CURLOPT_HTTPHEADER => array (
@@ -354,8 +353,8 @@ function updateServerDetailsList($dnsName = "", $instanceId = "", $amiName = "",
 				$toBeAddedArray = $dnsName;
 			}
 
-	foreach ($toBeAddedArray as $index => $serverDetails) {
-		$deployArray = updateServerUtilityMethod($serverDetails, $deployArray, $deployUtil);
+	foreach ($toBeAddedArray as $value) {
+		$deployArray = updateServerUtilityMethod($value, $deployArray, $deployUtil);
 	}
 
 	$deployUtil->writeToDeployFile($deployArray);
@@ -384,9 +383,9 @@ function sendNotification($serverurl, $apikey, $contextarray){
     $url = $serverurl."?action=notify&apikey=".$apikey;
 	$result = $this->do_curl($url, null, "POST", $data, null);
 	
-	$result = $result["response"];
+	$result = $result[self::RESPONSE];
 	$result = json_decode($result);
-    if(($result==null) ||($result->request->status !== "SUCCESS")){
+    if(($result==null) ||($result->request->status !== self::SUCCESS)){
      	$this->logHelper->log(ERROR, $result->request->message);
      	$this->logHelper->log (ERROR,"Not able to send notification to cloudmunch");
      	return false;
@@ -396,11 +395,8 @@ function sendNotification($serverurl, $apikey, $contextarray){
 }
 
 function notifyUsersInCloudmunch($serverurl,$message,$contextarray,$domain){
-	//	$url =$masterurl . "/cbdata.php?context=".$context."&username=CI&mode=update&domain=".$domain."&data=".$serverArray;
-	// global $curl_verbose;
-	$curl_verbose = 0;
-	//var_dump($serverArray);
 	
+	$curl_verbose = 0;
 	
 	$dataarray=json_encode($contextarray);
 	$dataarray=urlencode($dataarray);
@@ -432,7 +428,7 @@ function notifyUsersInCloudmunch($serverurl,$message,$contextarray,$domain){
 	$post = curl_init();
 	curl_setopt_array($post, $options);
 	$result = curl_exec($post);
-	$response_code = curl_getinfo($post, CURLINFO_HTTP_CODE);
+	 curl_getinfo($post, CURLINFO_HTTP_CODE);
 	if($result === FALSE) {
 		trigger_error ( "Error in notifying to cloudmunch", E_USER_ERROR );
 	}
@@ -452,7 +448,7 @@ function downloadFile($url, $apikey, $source, $destination = null){
     curl_setopt($ch, CURLOPT_FILE, $fp); 
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     // get curl response
-    $result = curl_exec($ch);
+    curl_exec($ch);
     $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
     if ($responseCode !== 200) {
@@ -575,7 +571,7 @@ function do_curl($url, $headers = null, $requestType = null, $data = null, $curl
 	$response = array();
 	$response["code"] = $responseCode;
 	$response["header"] = $headerSent;
-	$response["response"] = $results;
+	$response[self::RESPONSE] = $results;
 	
 	return $response;
 }
@@ -623,8 +619,8 @@ function html2txt($document){
 	$text = preg_replace($search, '_$_', $document);
 	$textx = explode('_$_', $text);
 	$text = "";
-	foreach($textx as $idx => $line) {
-		$text .= " " . $line;
+	foreach($textx as $value) {
+		$text .= " " . $value;
 	}
 	return $text;
 }

@@ -10,7 +10,7 @@
  */
 namespace CloudMunch\helper;
 
-use CloudMunch\datamanager\cmDataManager;
+use CloudMunch\datamanager\CMDataManager;
 use CloudMunch\AppContext;
 use CloudMunch\loghandling\LogHandler;
 use Cloudmunch\CloudmunchConstants;

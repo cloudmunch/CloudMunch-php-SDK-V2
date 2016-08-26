@@ -12,7 +12,7 @@
 namespace CloudMunch\helper;
 
 use \DateTime;;
-use CloudMunch\datamanager\cmDataManager;
+use CloudMunch\datamanager\CMDataManager;
 use CloudMunch\AppContext;
 use CloudMunch\loghandling\LogHandler;
 use CloudMunch\CloudmunchService;
@@ -37,7 +37,7 @@ class InsightHelper
         $this->appContext = $appContext;
         $this->logHelper  = $logHandler;
         $this->cmService  = new CloudmunchService($appContext, $this->logHelper);
-        $this->cmDataManager = new cmDataManager($this->logHelper, $appContext);
+        $this->cmDataManager = new CMDataManager($this->logHelper, $appContext);
     }
 
     /**

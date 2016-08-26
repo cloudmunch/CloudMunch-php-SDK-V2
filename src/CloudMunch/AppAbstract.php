@@ -13,7 +13,7 @@ namespace CloudMunch;
 
 require_once ("CloudmunchConstants.php");
 require_once ("loghandling/AppErrorLogHandler.php");
-use CloudMunch\Integrations\IntegrationDataHelper;
+use CloudMunch\integrations\IntegrationDataHelper;
 use CloudMunch\helper\AssetHelper;
 use CloudMunch\helper\EnvironmentHelper;
 use CloudMunch\helper\InsightHelper;
@@ -396,12 +396,12 @@ abstract class AppAbstract {
 		} else {
 			$integrationService = $integrationHelper->getService ( $this->getParameterObject () );
 		}
-		$processparameters = array (
+		return array (
 				"appInput" => $this->getParameterObject (),
 				"cloudservice" => $cloudservice,
 				"integrationdetails" => $integrationService 
 		);
-		return $processparameters;
+		
 	}
 	
 	/**
