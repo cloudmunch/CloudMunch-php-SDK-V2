@@ -83,7 +83,8 @@ abstract class AppAbstract {
 		for($i = 0; $i < sizeof ( $argArray ); $i ++) {
 			
 			switch ($argArray [$i]) {
-				
+				default:
+				   continue;
 				case "-jsoninput" :
 					{
 						
@@ -151,8 +152,6 @@ abstract class AppAbstract {
 				$appContext->setLogLevel("INFO");	
 			}
 			
-			$stepid=$stepDetails->id;
-				
 			
 				
 			$apptier=$stepDetails->tier;
@@ -263,8 +262,8 @@ abstract class AppAbstract {
 	 * @return ServerHelper serverhelper
 	 */
 	function getCloudmunchServerHelper() {
-		$serverhelper = new ServerHelper ( $this->appContext ,$this->logHandler);
-		return $serverhelper;
+		return new ServerHelper ( $this->appContext ,$this->logHandler);
+		
 	}
 
 	/**
@@ -274,8 +273,8 @@ abstract class AppAbstract {
 	 * @return EnvironmentHelper environment helper
 	 */
 	function getCloudmunchEnvironmentHelper() {
-		$this->envHelper = new EnvironmentHelper ( $this->appContext,$this->logHandler );
-		return $this->envHelper;
+		return  new EnvironmentHelper ( $this->appContext,$this->logHandler );
+		
 	}
 
 
@@ -286,8 +285,8 @@ abstract class AppAbstract {
 	 * @return EnvironmentHelper environment helper
 	 */
 	function getCloudmunchInsightHelper() {
-		$this->insightHelper = new InsightHelper ( $this->appContext,$this->logHandler );
-		return $this->insightHelper;
+		return new InsightHelper ( $this->appContext,$this->logHandler );
+		
 	}
 
 	/**
@@ -297,8 +296,8 @@ abstract class AppAbstract {
 	 * @return RoleHelper environment helper
 	 */
 	function getCloudmunchRoleHelper() {
-		$roleHelper = new RoleHelper ( $this->appContext,$this->logHandler );
-		return $roleHelper;
+		return new RoleHelper ( $this->appContext,$this->logHandler );
+		
 	}
 
 	/**
@@ -308,8 +307,8 @@ abstract class AppAbstract {
 	 * @return AssetHelper assethelper
 	 */
 	function getCloudmunchAssetHelper() {
-		$assethelper = new AssetHelper ( $this->appContext,$this->logHandler );
-		return $assethelper;
+		return new AssetHelper ( $this->appContext,$this->logHandler );
+		
 	}
 	
 	
@@ -320,8 +319,8 @@ abstract class AppAbstract {
 	 * @return IntegrationHelper integrationhelper
 	 */
 	function getCloudmunchIntegrationHelper() {
-		$integrationhelper = new IntegrationHelper ( $this->appContext,$this->logHandler );
-		return $integrationhelper;
+		return new IntegrationHelper ( $this->appContext,$this->logHandler );
+		
 	}
 	/**
 	 * This method returns reference to CloudmunchService,this helper class has all the methods to get/set data to cloudmunch service.
@@ -342,8 +341,8 @@ abstract class AppAbstract {
 	 * @return NotificationHandler
 	 */
 	function getNotificationHandler() {
-		$notificationHandler = new NotificationHandler ( $this->appContext ,$this->logHandler);
-		return $notificationHandler;
+		return new NotificationHandler ( $this->appContext ,$this->logHandler);
+		
 	}
 
 	/**
