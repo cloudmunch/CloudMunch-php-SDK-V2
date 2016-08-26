@@ -31,10 +31,10 @@ use Cloudmunch\CloudmunchConstants;
  private $logHelper     = null;
 
   public function __construct($appContext,$logHandler){
-  	$this->appContext = $appContext;
-  	$this->logHelper  = $logHandler;
-	$this->cmDataManager = new CMDataManager($this->logHelper, $this->appContext);
- 	
+    $this->appContext = $appContext;
+    $this->logHelper  = $logHandler;
+    $this->cmDataManager = new CMDataManager($this->logHelper, $this->appContext);
+    
  }
  
  /**
@@ -43,63 +43,63 @@ use Cloudmunch\CloudmunchConstants;
   * @return \CloudMunch\Server
   */
  function getServer($servername){
- 	$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$servername;
+    $serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$servername;
 
- 	$deployArray = $this->cmDataManager->getDataForContext($serverurl, $this->appContext->getAPIKey(),null);
-	if($deployArray === false){
-		return false;
-	}
-	
-	$detailArray=$deployArray->data;
-	
-	
+    $deployArray = $this->cmDataManager->getDataForContext($serverurl, $this->appContext->getAPIKey(),null);
+    if($deployArray === false){
+        return false;
+    }
+    
+    $detailArray=$deployArray->data;
+    
+    
 
-	
-			if(isset($detailArray->$servername->assetname) && $detailArray->$servername->assetname == "ElasticBeanStalk"){
-				$server=new ElasticBeanStalkServer();
-			}else{
-			$server=new Server();
-			}
-			$server->setServerName($detailArray->id);
-			$server->setDescription($detailArray->description);
-			$server->setDNS($detailArray->dnsName);
-			$server->setDomainName($detailArray->domainName);
-			$server->setCI($detailArray->CI);
-			$server->setDeploymentStatus($detailArray->deploymentStatus);
-			$server->setInstanceId($detailArray->instanceId);
-			$server->setImageID($detailArray->amiID);
-			$server->setLauncheduser($detailArray->username);
-			$server->setBuild($detailArray->build);
-			$server->setAppName($detailArray->appName);
-			$server->setDeployTempLoc($detailArray->deployTempLoc);
-			$server->setBuildLocation($detailArray->buildLoc);
-			$server->setPrivateKeyLoc($detailArray->privateKeyLoc);
-			$server->setPublicKeyLoc($detailArray->publicKeyLoc);
-			$server->setLoginUser($detailArray->loginUser);
-			$server->setServerType($detailArray->serverType);
-			$server->setAssettype($detailArray->assettype);
-			$server->setStatus($detailArray->status);
-			$server->setStarttime($detailArray->starttime);
-			$server->setProvider($detailArray->provider);
-			$server->setRegion($detailArray->region);
-			$server->setCmserver($detailArray->cmserver);
-			$server->setAssetname($detailArray->assetname);
-			$server->setInstancesize($detailArray->instancesize);
-			$server->setPassword($detailArray->password);
-			$server->setSSHPort($detailArray->sshport);
-			$server->setTier($detailArray->tier);
-			if($server instanceof ElasticBeanStalkServer){
-				$server->setEnvironmentName($detailArray->environmentName);
-				$server->setBucketName($detailArray->bucketName);
-				$server->setApplicationName($detailArray->applicationName);
-				$server->setTemplateName($detailArray->templateName);
-				
-				
-			}
-			return $server;
-		
+    
+            if(isset($detailArray->$servername->assetname) && $detailArray->$servername->assetname == "ElasticBeanStalk"){
+                $server=new ElasticBeanStalkServer();
+            }else{
+            $server=new Server();
+            }
+            $server->setServerName($detailArray->id);
+            $server->setDescription($detailArray->description);
+            $server->setDNS($detailArray->dnsName);
+            $server->setDomainName($detailArray->domainName);
+            $server->setCI($detailArray->CI);
+            $server->setDeploymentStatus($detailArray->deploymentStatus);
+            $server->setInstanceId($detailArray->instanceId);
+            $server->setImageID($detailArray->amiID);
+            $server->setLauncheduser($detailArray->username);
+            $server->setBuild($detailArray->build);
+            $server->setAppName($detailArray->appName);
+            $server->setDeployTempLoc($detailArray->deployTempLoc);
+            $server->setBuildLocation($detailArray->buildLoc);
+            $server->setPrivateKeyLoc($detailArray->privateKeyLoc);
+            $server->setPublicKeyLoc($detailArray->publicKeyLoc);
+            $server->setLoginUser($detailArray->loginUser);
+            $server->setServerType($detailArray->serverType);
+            $server->setAssettype($detailArray->assettype);
+            $server->setStatus($detailArray->status);
+            $server->setStarttime($detailArray->starttime);
+            $server->setProvider($detailArray->provider);
+            $server->setRegion($detailArray->region);
+            $server->setCmserver($detailArray->cmserver);
+            $server->setAssetname($detailArray->assetname);
+            $server->setInstancesize($detailArray->instancesize);
+            $server->setPassword($detailArray->password);
+            $server->setSSHPort($detailArray->sshport);
+            $server->setTier($detailArray->tier);
+            if($server instanceof ElasticBeanStalkServer){
+                $server->setEnvironmentName($detailArray->environmentName);
+                $server->setBucketName($detailArray->bucketName);
+                $server->setApplicationName($detailArray->applicationName);
+                $server->setTemplateName($detailArray->templateName);
+                
+                
+            }
+            return $server;
+        
 
-	
+    
  }
  
  
@@ -109,64 +109,64 @@ use Cloudmunch\CloudmunchConstants;
    * @param string $docker
    */
  function addServer($server,$serverstatus,$docker = false){
- 	
- 	if(empty($assetStatus)){
- 		$this->logHelper->log (ERROR, "Server status need to be provided");
- 		return false;
- 	}
- 	$statusconArray=array(STATUS_RUNNING,STATUS_STOPPED,STATUS_NIL);
- 	if(!in_array ( $serverstatus ,$statusconArray )){
- 		$this->logHelper->log (ERROR, "Invalid status");
- 		return false;
- 	}
- 	
- 	
-	
-	$dataArray = array (
-	
-		"description" => $server->getDescription(),
-		"dnsName" => $server->getDNS(),
-		"domainName" => $server->getDomainName(),
-		"emailID" => $server->getEmailId(),
-		"CI" => $server->getCI() ? 'y' : 'n',
-		"deploymentStatus" => $server->getDeploymentStatus(),
-		"instanceId" => $server->getInstanceId(),
-		"amiID" => $server->getImageID(),
-		"username" => $server->getLauncheduser(),
-		"build" => $server->getBuild(),
-		"appName" =>$server->getAppName(),
-		"deployTempLoc" => $server->getDeployTempLoc(), 
-		"buildLoc" => $server->getBuildLocation(),
-		"privateKeyLoc" => $server->getPrivateKeyLoc(),
-		"publicKeyLoc" => $server->getPublicKeyLoc(),
-		"loginUser" => $server->getLoginUser(),
-		"serverType" => $server->getServerType(),
-		"type" => "server",
-		"status" => $server->getStatus(),
-		"starttime" => $server->getStarttime(),
-		"provider" => $server->getProvider(),
-		"region" => $server->getRegion(),
-		"cmserver" => $server->getCmserver(),
-		"name" => $server->getServerName(),
-		"instancesize" => $server->getInstancesize(),
-		"password" => $server->getPassword(),
-		"sshport" => $server->getSSHPort(),
-			"tier"=>$server->getTier()
-	);
-	if($server instanceof ElasticBeanStalkServer){
-		$dataArray[applicationName]=$server->getApplicationName();
-		$dataArray[templateName]=$server->getTemplateName();
-		$dataArray[environmentName]=$server->getEnvironmentName();
-		$dataArray[bucketName]=$server->getBucketName();	
-	}
-	$dataArray[status]=$serverstatus;
-	if($docker){
-		$dataArray[projects] = array ($server->getAppName() => array ("buildNo" => $server->getBuild()));
-	}
+    
+    if(empty($assetStatus)){
+        $this->logHelper->log (ERROR, "Server status need to be provided");
+        return false;
+    }
+    $statusconArray=array(STATUS_RUNNING,STATUS_STOPPED,STATUS_NIL);
+    if(!in_array ( $serverstatus ,$statusconArray )){
+        $this->logHelper->log (ERROR, "Invalid status");
+        return false;
+    }
+    
+    
+    
+    $dataArray = array (
+    
+        "description" => $server->getDescription(),
+        "dnsName" => $server->getDNS(),
+        "domainName" => $server->getDomainName(),
+        "emailID" => $server->getEmailId(),
+        "CI" => $server->getCI() ? 'y' : 'n',
+        "deploymentStatus" => $server->getDeploymentStatus(),
+        "instanceId" => $server->getInstanceId(),
+        "amiID" => $server->getImageID(),
+        "username" => $server->getLauncheduser(),
+        "build" => $server->getBuild(),
+        "appName" =>$server->getAppName(),
+        "deployTempLoc" => $server->getDeployTempLoc(), 
+        "buildLoc" => $server->getBuildLocation(),
+        "privateKeyLoc" => $server->getPrivateKeyLoc(),
+        "publicKeyLoc" => $server->getPublicKeyLoc(),
+        "loginUser" => $server->getLoginUser(),
+        "serverType" => $server->getServerType(),
+        "type" => "server",
+        "status" => $server->getStatus(),
+        "starttime" => $server->getStarttime(),
+        "provider" => $server->getProvider(),
+        "region" => $server->getRegion(),
+        "cmserver" => $server->getCmserver(),
+        "name" => $server->getServerName(),
+        "instancesize" => $server->getInstancesize(),
+        "password" => $server->getPassword(),
+        "sshport" => $server->getSSHPort(),
+            "tier"=>$server->getTier()
+    );
+    if($server instanceof ElasticBeanStalkServer){
+        $dataArray[applicationName]=$server->getApplicationName();
+        $dataArray[templateName]=$server->getTemplateName();
+        $dataArray[environmentName]=$server->getEnvironmentName();
+        $dataArray[bucketName]=$server->getBucketName();    
+    }
+    $dataArray[status]=$serverstatus;
+    if($docker){
+        $dataArray[projects] = array ($server->getAppName() => array ("buildNo" => $server->getBuild()));
+    }
 
 
-	$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/";
- 	$this->cmDataManager->putDataForContext($serverurl,$this->appContext->getAPIKey(),$dataArray);
+    $serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/";
+    $this->cmDataManager->putDataForContext($serverurl,$this->appContext->getAPIKey(),$dataArray);
  }
  
  /**
@@ -174,45 +174,45 @@ use Cloudmunch\CloudmunchConstants;
   * @param \CloudMunch\Server $server
   */
  function updateServer($server,$serverid){
- 	
- 	$dataArray = array (
-	
-			"description" => $server->getDescription(),
-		"dnsName" => $server->getDNS(),
-		"domainName" => $server->getDomainName(),
-		"emailID" => $server->getEmailId(),
-		"CI" => $server->getCI() ? 'y' : 'n',
-		"deploymentStatus" => $server->getDeploymentStatus(),
-		"instanceId" => $server->getInstanceId(),
-		"amiID" => $server->getImageID(),
-		"username" => $server->getLauncheduser(),
-		"build" => $server->getBuild(),
-		"appName" =>$server->getAppName(),
-		"deployTempLoc" => $server->getDeployTempLoc(), 
-	"buildLoc" => $server->getBuildLocation(),
-		"privateKeyLoc" => $server->getPrivateKeyLoc(),
-		"publicKeyLoc" => $server->getPublicKeyLoc(),
-		"loginUser" => $server->getLoginUser(),
-		"serverType" => $server->getServerType(),
-		"type" => "server",
-		"status" => $server->getStatus(),
-		"starttime" => $server->getStarttime(),
-		"provider" => $server->getProvider(),
-		"region" => $server->getRegion(),
-		"cmserver" => $server->getCmserver(),
-		"name" => $server->getServerName(),
-		"instancesize" => $server->getInstancesize(),
-		"password"=>$server->getPassword(),
-		"sshport"=>$server->getSSHPort(),
- 			"tier"=>$server->getTier()
-	);
- 	
- 	
+    
+    $dataArray = array (
+    
+            "description" => $server->getDescription(),
+        "dnsName" => $server->getDNS(),
+        "domainName" => $server->getDomainName(),
+        "emailID" => $server->getEmailId(),
+        "CI" => $server->getCI() ? 'y' : 'n',
+        "deploymentStatus" => $server->getDeploymentStatus(),
+        "instanceId" => $server->getInstanceId(),
+        "amiID" => $server->getImageID(),
+        "username" => $server->getLauncheduser(),
+        "build" => $server->getBuild(),
+        "appName" =>$server->getAppName(),
+        "deployTempLoc" => $server->getDeployTempLoc(), 
+    "buildLoc" => $server->getBuildLocation(),
+        "privateKeyLoc" => $server->getPrivateKeyLoc(),
+        "publicKeyLoc" => $server->getPublicKeyLoc(),
+        "loginUser" => $server->getLoginUser(),
+        "serverType" => $server->getServerType(),
+        "type" => "server",
+        "status" => $server->getStatus(),
+        "starttime" => $server->getStarttime(),
+        "provider" => $server->getProvider(),
+        "region" => $server->getRegion(),
+        "cmserver" => $server->getCmserver(),
+        "name" => $server->getServerName(),
+        "instancesize" => $server->getInstancesize(),
+        "password"=>$server->getPassword(),
+        "sshport"=>$server->getSSHPort(),
+            "tier"=>$server->getTier()
+    );
+    
+    
 
-	$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$serverid;
-	
-	return $this->cmDataManager->updateDataForContext($serverurl,$this->appContext->getAPIKey(),$dataArray);
-	
+    $serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$serverid;
+    
+    return $this->cmDataManager->updateDataForContext($serverurl,$this->appContext->getAPIKey(),$dataArray);
+    
  }
  
  /**
@@ -220,10 +220,10 @@ use Cloudmunch\CloudmunchConstants;
   * @param  $serverName Name of server.
   */
  function deleteServer($assetID){
- 	$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$assetID;
-	
-	return $this->cmDataManager->deleteDataForContext($serverurl,$this->appContext->getAPIKey());
- 	
+    $serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$assetID;
+    
+    return $this->cmDataManager->deleteDataForContext($serverurl,$this->appContext->getAPIKey());
+    
  }
  
  /**
@@ -232,54 +232,54 @@ use Cloudmunch\CloudmunchConstants;
   * @return boolean
   */
  function checkServerExists($servername){
- 	$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$servername;
- 	$deployArray = $this->cmDataManager->getDataForContext($serverurl, $this->appContext->getAPIKey(),"");
-	if($deployArray === false){
-		return false;
-	}
-	
-	$detailArray=$deployArray->data;
+    $serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$servername;
+    $deployArray = $this->cmDataManager->getDataForContext($serverurl, $this->appContext->getAPIKey(),"");
+    if($deployArray === false){
+        return false;
+    }
+    
+    $detailArray=$deployArray->data;
 
-	if ($detailArray == null) {
-		return false;
-	}else{
-		return true;
-	}
+    if ($detailArray == null) {
+        return false;
+    }else{
+        return true;
+    }
 
-	
+    
  }
  
 /**
 * Checks if server is up and running
 *
-* @param 	string dns 		: 	dns of target server 
-* @param    number sshport 	: 	ssh port to be used to check for connection
-* @return 	string Success 	: 	displays an appropriate message
-*			       Failure 	: 	exits with a failure status with an appropriate message
+* @param    string dns      :   dns of target server 
+* @param    number sshport  :   ssh port to be used to check for connection
+* @return   string Success  :   displays an appropriate message
+*                  Failure  :   exits with a failure status with an appropriate message
 */
 function checkConnect($dns,$sshport = 22) {
-	$connectionTimeout = time();
-	$connectionTimeout = $connectionTimeout + (10 * 10);
+    $connectionTimeout = time();
+    $connectionTimeout = $connectionTimeout + (10 * 10);
 
-	do {
-	    if (($dns == null) || ($dns == '')) {
-	        $this->logHelper->log(ERROR, "Invalid dns" . $dns);
-	        return false;
-	    }
+    do {
+        if (($dns == null) || ($dns == '')) {
+            $this->logHelper->log(ERROR, "Invalid dns" . $dns);
+            return false;
+        }
 
-	    $this->logHelper->log(INFO, "Checking connectivity to: " . $dns);
+        $this->logHelper->log(INFO, "Checking connectivity to: " . $dns);
 
-	    $connection = ssh2_connect($dns, $sshport);
-	    if (!$connection) {
-	        sleep(10);
-	    }
+        $connection = ssh2_connect($dns, $sshport);
+        if (!$connection) {
+            sleep(10);
+        }
 
-	} while ((!$connection) && (time() < $connectionTimeout));
+    } while ((!$connection) && (time() < $connectionTimeout));
 
-	if (!$connection) {
-	    $this->logHelper->log(ERROR, "Failed to connect to " . $dns);
-	    return false;
-	}
+    if (!$connection) {
+        $this->logHelper->log(ERROR, "Failed to connect to " . $dns);
+        return false;
+    }
 }
  
 

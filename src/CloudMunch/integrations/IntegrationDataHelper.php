@@ -16,37 +16,37 @@ use CloudMunch\loghandling\LogHandler;
  *
  */
   class IntegrationDataHelper{
-  	private $logHelper=null;
-  	
-  	/**
-  	 * This method process plugin input to retreive the provider details.
-  	 * @param  $jsonParams Input parameters to the plugin in json format.
-  	 * @return array $integrationdetails Array containing credentials to connect to the provider.
-  	 *         
-  	 */
- 	
-  	
-  	public function __construct($logHandler){
-  	 $this->logHelper=	$logHandler;
-  	}
- 	
+    private $logHelper=null;
+    
+    /**
+     * This method process plugin input to retreive the provider details.
+     * @param  $jsonParams Input parameters to the plugin in json format.
+     * @return array $integrationdetails Array containing credentials to connect to the provider.
+     *         
+     */
+  
+    
+    public function __construct($logHandler){
+     $this->logHelper=  $logHandler;
+    }
+  
  
- 	function getIntegrationData($cloudmunchservice,$jsonParams){
- 		$arg1 = 'providername';
- 		$provname = $jsonParams-> $arg1;
- 		$contextArray = array('integrations' => $provname);
- 		$data = $cloudmunchservice->getCustomContextData($contextArray, null);
- 		if ($data->configuration){
- 			$regfields= $data->configuration;
- 			$integrationdetails=array();
- 			foreach ($regfields as $key=>$value){
- 				$integrationdetails[$key]=$value;
- 		
- 			}
- 			return $integrationdetails;
- 		} else {
- 			return null;
- 		}
- 	}
+  function getIntegrationData($cloudmunchservice,$jsonParams){
+    $arg1 = 'providername';
+    $provname = $jsonParams-> $arg1;
+    $contextArray = array('integrations' => $provname);
+    $data = $cloudmunchservice->getCustomContextData($contextArray, null);
+    if ($data->configuration){
+      $regfields= $data->configuration;
+      $integrationdetails=array();
+      foreach ($regfields as $key=>$value){
+        $integrationdetails[$key]=$value;
+    
+      }
+      return $integrationdetails;
+    } else {
+      return null;
+    }
+  }
  }
 ?>
