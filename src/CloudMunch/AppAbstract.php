@@ -48,10 +48,7 @@ abstract class AppAbstract {
 	 */
 	private $stime = null;
 	
-	/**
-	 * A boolean to indicate if it is new platform
-	 */
-	private $newVer = false;
+	
 	
 	/**
 	 * 
@@ -96,18 +93,18 @@ abstract class AppAbstract {
 					{
 						$variableParams = $argArray [$i + 1];
 						
-						$this->newVer = true;
+						
 					}
 				
 				case "-integrations" :
 					{
 						$integrations = $argArray [$i + 1];
 						
-						$this->newVer = true;
+						
 					}
 			}
 		}
-		if ($this->newVer) {
+		
 			$jsonParams = json_decode ( $jsonParameters );
 			$varParams = json_decode ( $variableParams );
 			$integrations = json_decode ( $integrations );
@@ -181,36 +178,7 @@ abstract class AppAbstract {
 			$appContext->setMainbuildnumber($buildno);
 			
 			$this->setAppContext ( $appContext );
-		} else {
-			$jsonParams = json_decode ( $jsonParameters );
-			foreach ( $jsonParams as $key => $value ) {
-				if (($key !== "cloudproviders") && ($key !== "password") && ($key !== "inputparameters")) {
-					$this->logHandler->log ( DEBUG, $key . ": " . $value );
-				}
-			}
-			
-			$appContext = new AppContext ();
-			
-			$arg10 = 'masterurl';
-			$masterurl = $jsonParams->$arg10;
-			$appContext->setMasterURL ( $masterurl );
-			
-			$arg10 = 'cloudproviders';
-			$cloudproviders = $jsonParams->$arg10;
-			$appContext->setCloudproviders ( $cloudproviders );
-			$arg2 = 'domain';
-			$domainName = $jsonParams->$arg2;
-			$appContext->setDomainName ( $domainName );
-			
-			$arg6 = 'projectName';
-			$projectId = $jsonParams->$arg6;
-			$appContext->setProject ( $projectId );
-			
-			$arg6 = 'jobname';
-			$jobname = $jsonParams->$arg6;
-			$appContext->setJob ( $jobname );
-			$this->setAppContext ( $appContext );
-		}
+		
 		$this->createLogHandler();
 		return $this->setParameterObject ( $jsonParams );
 	}
@@ -384,7 +352,7 @@ abstract class AppAbstract {
 		$cloudservice = null;
 		
 		$integrationHelper = new IntegrationDataHelper ($this->logHandler);
-		if ($this->newVer) {
+		
 			if($this->getParameterObject()->providername){
 				
 				$this->logHandler->log ( INFO, "Getting integration" );
@@ -393,9 +361,7 @@ abstract class AppAbstract {
 			    	$this->logHandler->log ( INFO, "Retrieving integration failed" );
 			    }
 			}		
-		} else {
-			$integrationService = $integrationHelper->getService ( $this->getParameterObject () );
-		}
+		
 		return array (
 				"appInput" => $this->getParameterObject (),
 				"cloudservice" => $cloudservice,
@@ -432,7 +398,7 @@ abstract class AppAbstract {
 			$variablename = "{".$variablename."}";
 		}
 
-		if ($this->newVer) {
+		
 			$fileloc = $this->appContext->getReportsLocation () . "/" . $this->appContext->getStepID () . ".out";
 			$varlist = null;
 			if(file_exists($fileloc)){
@@ -459,9 +425,7 @@ abstract class AppAbstract {
 				$variablesArray  = array ( $variablename => $variable );
 	    	    $this->envHelper->updateVariables($environment_id, $variablesArray);
 	    	}
-		} else {
-			echo "\n<{\"" . $variablename . "\":\"" . $variable . "\"}>" . PHP_EOL;
-		}
+		
 		
 	}
 

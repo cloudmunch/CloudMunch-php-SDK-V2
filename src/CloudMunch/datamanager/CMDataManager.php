@@ -52,7 +52,7 @@ function getDataForContext($url,$apikey,$querystring) {
 	
 	$result = $this->do_curl($url, null, "GET", null, null);
 	
-	$result = $result[self::RESPONSE];
+	$result = $result[static::RESPONSE];
 	
 	if (($result == null)) {
 		return false;
@@ -64,11 +64,11 @@ function getDataForContext($url,$apikey,$querystring) {
 		return $result;
 	}
 	
-	if((!empty($resultdecode->request->status))&&($resultdecode->request->status !== self::SUCCESS)) {
+	if((!empty($resultdecode->request->status))&&($resultdecode->request->status !== static::SUCCESS)) {
      	$this->logHelper->log(ERROR, $resultdecode->request->message);
 		if($resultdecode->request->request_id) {
-			$this->logHelper->log(ERROR,self::REQUESTID." : " . $resultdecode->request->request_id);
-			$this->notificationHandler->sendSlackNotification($resultdecode->request->message.".". self::REQUESTID." : ".$resultdecode->request->request_id);
+			$this->logHelper->log(ERROR,static::REQUESTID." : " . $resultdecode->request->request_id);
+			$this->notificationHandler->sendSlackNotification($resultdecode->request->message.".". static::REQUESTID." : ".$resultdecode->request->request_id);
 		}
 		return false;
 	}
@@ -86,7 +86,7 @@ function downloadGSkey($url,$apikey,$querystring){
 	
 	$result = $this->do_curl($url, null, "GET", null, null);
 	
-	$result = $result[self::RESPONSE];
+	$result = $result[static::RESPONSE];
 	
 	if (($result == null)) {
 		return false;
@@ -115,15 +115,15 @@ function downloadGSkey($url,$apikey,$querystring){
 
 	$result = $this->do_curl($url, null, "POST", $dat, null);
 	
-	$result = $result[self::RESPONSE];
+	$result = $result[static::RESPONSE];
 	$result = json_decode($result);
 	
-     if(($result==null) ||($result->request->status !== self::SUCCESS)){
+     if(($result==null) ||($result->request->status !== static::SUCCESS)){
      	$this->logHelper->log(ERROR, $result->request->message);
      	$this->logHelper->log (ERROR,"Not able to post data to cloudmunch");
 		if($result->request->request_id) {
-			$this->logHelper->log(ERROR,self::REQUESTID." : " . $result->request->request_id);
-			$this->notificationHandler->sendSlackNotification($result->request->message.". ".self::REQUESTID." : ".$result->request->request_id);
+			$this->logHelper->log(ERROR,static::REQUESTID." : " . $result->request->request_id);
+			$this->notificationHandler->sendSlackNotification($result->request->message.". ".static::REQUESTID." : ".$result->request->request_id);
 		}
      	return false;
      }
@@ -151,15 +151,15 @@ function updateDataForContext($url,$apikey,$data,$comment = null){
 
 	$result=$this->do_curl($url, null, "PATCH", $dat, null);
 	
-	$result=$result[self::RESPONSE];
+	$result=$result[static::RESPONSE];
 	$result=json_decode($result);
 	
-     if(($result==null) ||($result->request->status !== self::SUCCESS)){
+     if(($result==null) ||($result->request->status !== static::SUCCESS)){
      	$this->logHelper->log(ERROR, $result->request->message);
      	$this->logHelper->log (ERROR,"Not able to patch data to cloudmunch");
 		if($result->request->request_id) {
-			$this->logHelper->log(ERROR,self::REQUESTID." : " . $result->request->request_id);
-			$this->notificationHandler->sendSlackNotification($result->request->message.". ".self::REQUESTID." : ".$result->request->request_id);
+			$this->logHelper->log(ERROR,static::REQUESTID." : " . $result->request->request_id);
+			$this->notificationHandler->sendSlackNotification($result->request->message.". ".static::REQUESTID." : ".$result->request->request_id);
 		}
      	return false;
      }
@@ -170,13 +170,13 @@ function updateDataForContext($url,$apikey,$data,$comment = null){
 function deleteDataForContext($url,$apikey){
 	$url=$url."?apikey=".$apikey;
 	$result=$this->do_curl($url, null, "DELETE", null, null);
-	$result=$result[self::RESPONSE];
+	$result=$result[static::RESPONSE];
 	$result=json_decode($result);
-	if(($result==null) ||($result->request->status!=self::SUCCESS)      ){
+	if(($result==null) ||($result->request->status!=static::SUCCESS)      ){
      	$this->logHelper->log(ERROR, $result->request->message);
      	$this->logHelper->log (ERROR,"Not able to put data to cloudmunch");
 		if($result->request->request_id) {
-			$this->logHelper->log(ERROR,self::REQUESTID." : " . $result->request->request_id);
+			$this->logHelper->log(ERROR,static::REQUESTID." : " . $result->request->request_id);
 		}
      	return false;
 	}
@@ -184,181 +184,11 @@ function deleteDataForContext($url,$apikey){
 	return $result;
 }
 
-function startDeployAction($servername, $project, $job_from_which_deploy_triggered, $env, $stage, $deploy_params, $step_config, $domain ) {
-	$url = $servername . "/cbdata.php?action=TRIGGERDEPLOYJOB&projectName=$project&jobName=$job_from_which_deploy_triggered&envName=$env&category=deploy&deploytype=$deploy_type&username=CI&domain=$domain&deployParams=".urlencode($deploy_params)."&stepConfig=".urlencode($step_config);
-	$options = array (
-		CURLOPT_HEADER => 0,
-		CURLOPT_HTTPHEADER => array (
-			"Content-Type:application/json"
-		),
-		CURLOPT_URL => $url,
-		CURLOPT_FRESH_CONNECT => 1,
-		CURLOPT_RETURNTRANSFER => 1,
-		CURLOPT_FORBID_REUSE => 1,
-		CURLOPT_FOLLOWLOCATION => 1,
-		CURLOPT_TIMEOUT => 200,
-		CURLOPT_HTTPAUTH => CURLAUTH_ANY,
-		CURLOPT_USERPWD => "",
-		CURLOPT_POST => 0,
-		CURLOPT_VERBOSE => 0,
-		CURLOPT_SSL_VERIFYHOST => 0, //2,
-		CURLOPT_SSL_VERIFYPEER => false
-	);
-	$post = curl_init();
-	curl_setopt_array($post, $options);
-	if (!$result = curl_exec($post)) {
-		trigger_error ( "Not able to retrieve data from cloudmunch", E_USER_ERROR );
-	}
-	curl_close($post);
-	return $result;
-}
 
-function updateContext($masterurl, $context, $domain, $serverArray) {
-	
-	$curl_verbose = 0;
-	
-	$data = "data=" . json_encode($serverArray);
-	$url = $masterurl . "/cbdata.php?context=" . $context . "&username=CI&mode=update&domain=" . $domain;
-	
-	$options = array (
-		CURLOPT_HEADER => 0,
-		CURLOPT_HTTPHEADER => array (
-			'Content-Type: application/x-www-form-urlencoded'
-		),
-		CURLOPT_URL => $url,
-		CURLOPT_FOLLOWLOCATION => true,
-		CURLOPT_FRESH_CONNECT => 1,
-		CURLOPT_RETURNTRANSFER => 1,
-		CURLOPT_FORBID_REUSE => 1,
-		CURLOPT_TIMEOUT => 20,
-		CURLOPT_FAILONERROR => 1,
-		CURLOPT_POSTFIELDS => $data,
-		CURLOPT_POST => 1,
-		CURLOPT_VERBOSE => $curl_verbose,
-		CURLOPT_SSL_VERIFYPEER => false,
-		CURLOPT_SSL_VERIFYHOST => false
-	);
 
-	$post = curl_init();
-	curl_setopt_array($post, $options);
-	$result = curl_exec($post);
-	$response_code = curl_getinfo($post, CURLINFO_HTTP_CODE);
-if(($result === FALSE) && ($response_code != 100)) {
-	$this->logHelper->log(INFO,"result:" . $response_code);
-	trigger_error ( "Error in updating to cloudmunch", E_USER_ERROR );
-}
 
-}
-function updateCustomContext($masterurl, $context, $domain, $serverArray,$id) {
-	
-	global $curl_verbose;
-	$curl_verbose = 0;
-	
-	$data = "data=" . json_encode($serverArray["data"]);
-	$url = $masterurl . "/cbdata.php?action=updatecustomcontext&customcontext=" . $context . "&username=CI&mode=update&domain=" . $domain."&id=".$id;
-	
-	$options = array (
-			CURLOPT_HEADER => 0,
-			CURLOPT_HTTPHEADER => array (
-					'Content-Type: application/x-www-form-urlencoded'
-			),
-			CURLOPT_URL => $url,
-			CURLOPT_FOLLOWLOCATION => true,
-			CURLOPT_FRESH_CONNECT => 1,
-			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_FORBID_REUSE => 1,
-			CURLOPT_TIMEOUT => 20,
-			CURLOPT_FAILONERROR => 1,
-			CURLOPT_POSTFIELDS => $data,
-			CURLOPT_POST => 1,
-			CURLOPT_VERBOSE => $curl_verbose,
-			CURLOPT_SSL_VERIFYPEER => false,
-			CURLOPT_SSL_VERIFYHOST => false
-	);
 
-	$post = curl_init();
-	curl_setopt_array($post, $options);
-	$result = curl_exec($post);
-	$response_code = curl_getinfo($post, CURLINFO_HTTP_CODE);
-	if(($result === FALSE) && ($response_code != 100)) {
-		$this->logHelper->log(INFO,"result:" . $response_code);
-		trigger_error ( "Error in updating to cloudmunch", E_USER_ERROR );
-	}
 
-}
-
-function getDataForCustomContext($servername, $context) {
-
-	$context = http_build_query($context);
-	$context = urldecode($context);
-	$url = $servername . "/cbdata.php?" . $context;
-
-	$options = array (
-		CURLOPT_HEADER => 0,
-		CURLOPT_HTTPHEADER => array (
-			"Content-Type:application/json"
-		),
-		CURLOPT_URL => $url,
-		CURLOPT_FRESH_CONNECT => 1,
-		CURLOPT_RETURNTRANSFER => 1,
-		CURLOPT_FORBID_REUSE => 1,
-		CURLOPT_TIMEOUT => 200,
-		CURLOPT_HTTPAUTH => CURLAUTH_ANY,
-		CURLOPT_USERPWD => "",
-		CURLOPT_POST => 0,
-		CURLOPT_VERBOSE => 0,
-		CURLOPT_SSL_VERIFYHOST => 0, //2,
-	CURLOPT_SSL_VERIFYPEER => false
-	);
-
-	$post = curl_init();
-	curl_setopt_array($post, $options);
-	if (!$result = curl_exec($post)) {
-		trigger_error ( "Not able to retrieve data from cloudmunch", E_USER_ERROR );
-	}
-	curl_close($post);
-	
-	return $result;
-}
-
-function updateServerDetailsList($dnsName = "", $instanceId = "", $amiName = "", $projectId = "", $serverName = "", $CI = false, $emailId = "", $domainName = "", $KeyName = "", $launchParam = array (), $serverdescription = "", $serverType = "", $cloudprovidername = "", $region = "") {
-
-	$deployUtil = new DeployUtil();
-	$deployArray = $deployUtil->readDeployConfigFile();
-
-	$toBeAddedArray = array ();
-	if (is_array($dnsName) && is_assoc($dnsName)) {
-		array_push($toBeAddedArray, $dnsName);
-	} else
-		if (!is_array($dnsName)) {
-			$inputServerDetails = array (
-				"dnsName" => $dnsName,
-				"instanceId" => $instanceId,
-				"amiName" => $amiName,
-				"projectId" => $projectId,
-				"serverName" => $serverName,
-				"CI" => $CI,
-				"emailId" => $emailId,
-				"domainName" => $domainName,
-				"KeyName" => $KeyName,
-				"launchParam" => $launchParam,
-				"serverdescription" => $serverdescription,
-				"serverType" => $serverType,
-				"cloudprovidername" => $cloudprovidername,
-				"region" => $region
-			);
-			array_push($toBeAddedArray, $inputServerDetails);
-		} else
-			if (is_array($dnsName) && !is_assoc($dnsName)) {
-				$toBeAddedArray = $dnsName;
-			}
-
-	foreach ($toBeAddedArray as $value) {
-		$deployArray = updateServerUtilityMethod($value, $deployArray, $deployUtil);
-	}
-
-	$deployUtil->writeToDeployFile($deployArray);
-}
 
 /**
  * This method is to invoke notify api on cloudmunch.
@@ -383,9 +213,9 @@ function sendNotification($serverurl, $apikey, $contextarray){
     $url = $serverurl."?action=notify&apikey=".$apikey;
 	$result = $this->do_curl($url, null, "POST", $data, null);
 	
-	$result = $result[self::RESPONSE];
+	$result = $result[static::RESPONSE];
 	$result = json_decode($result);
-    if(($result==null) ||($result->request->status !== self::SUCCESS)){
+    if(($result==null) ||($result->request->status !== static::SUCCESS)){
      	$this->logHelper->log(ERROR, $result->request->message);
      	$this->logHelper->log (ERROR,"Not able to send notification to cloudmunch");
      	return false;
@@ -394,45 +224,7 @@ function sendNotification($serverurl, $apikey, $contextarray){
     }
 }
 
-function notifyUsersInCloudmunch($serverurl,$message,$contextarray,$domain){
-	
-	$curl_verbose = 0;
-	
-	$dataarray=json_encode($contextarray);
-	$dataarray=urlencode($dataarray);
-	$message=urlencode($message);
-	
-	$usercontext = "usercontext=" . $dataarray;
 
-	$url = $serverurl . "/cbdata.php?action=NOTIFY&to=*&message=".$message."&domain=" . $domain."&username=CI";
-	
-	$options = array (
-		CURLOPT_HEADER => 0,
-		CURLOPT_HTTPHEADER => array (
-			'Content-Type: application/x-www-form-urlencoded'
-		),
-		CURLOPT_URL => $url,
-		CURLOPT_FOLLOWLOCATION => true,
-		CURLOPT_FRESH_CONNECT => 1,
-		CURLOPT_RETURNTRANSFER => 1,
-		CURLOPT_FORBID_REUSE => 1,
-		CURLOPT_TIMEOUT => 20,
-		CURLOPT_FAILONERROR => 1,
-			CURLOPT_POSTFIELDS => $usercontext,
-		CURLOPT_POST => 1,
-		CURLOPT_VERBOSE => $curl_verbose,
-		CURLOPT_SSL_VERIFYPEER => false,
-		CURLOPT_SSL_VERIFYHOST => false
-	);
-
-	$post = curl_init();
-	curl_setopt_array($post, $options);
-	$result = curl_exec($post);
-	 curl_getinfo($post, CURLINFO_HTTP_CODE);
-	if($result === FALSE) {
-		trigger_error ( "Error in notifying to cloudmunch", E_USER_ERROR );
-	}
-}
 function downloadFile($url, $apikey, $source, $destination = null){
     set_time_limit(0);
     $url = $url . "?apikey=" . $apikey . "&file=/" . $source . "&mode=DOWNLOAD";
@@ -571,7 +363,7 @@ function do_curl($url, $headers = null, $requestType = null, $data = null, $curl
 	$response = array();
 	$response["code"] = $responseCode;
 	$response["header"] = $headerSent;
-	$response[self::RESPONSE] = $results;
+	$response[static::RESPONSE] = $results;
 	
 	return $response;
 }

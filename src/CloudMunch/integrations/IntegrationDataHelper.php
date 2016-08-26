@@ -29,32 +29,6 @@ use CloudMunch\loghandling\LogHandler;
   	public function __construct($logHandler){
   	 $this->logHelper=	$logHandler;
   	}
- 	function getService($jsonParams){
- 		
- 		$arg10 = 'cloudproviders';
-		$cloudproviders = $jsonParams-> $arg10;
-		$cloudproviders=json_decode($cloudproviders);
-		$arg1 = 'providername';
-		$provname = $jsonParams-> $arg1;
-		
-	   
-	    
-	   
-	    if(($provname != null) && (strlen(trim($provname))>0)){
-	    $regfields=$cloudproviders->$provname;
-	    
-	  
-	   $integrationdetails=array();
-	    foreach ($regfields as $key=>$value){
-	    	$integrationdetails[$key]=$value;
-	    	
-	    }
-	  return $integrationdetails;
-	    }else{
-	    	return null;
-	    }
- 		
- 	}
  	
  
  	function getIntegrationData($cloudmunchservice,$jsonParams){
