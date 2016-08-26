@@ -18,6 +18,13 @@ use Cloudmunch\CloudmunchConstants;
  * This is a helper class for environments. User can manage environments in cloudmunch using this helper.
  */
 class EnvironmentHelper {
+	const APPLICATIONS="/applications/";
+	
+	const DATAERROR="Could not retreive data from cloudmunch";
+	
+	const ENVIRONMENTS="/environments/";
+	
+	const STAGE="stage";
     private $appContext = null;
     private $cmDataManager = null;
     private $logHelper = null;
@@ -44,16 +51,16 @@ class EnvironmentHelper {
         if ($filterdata !== null) {
             $querystring = "filter=" . json_encode ( $filterdata );
         }
-        $serverurl = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/environments";
+        $serverurl = $this->appContext->getMasterURL () . APPLICATIONS . $this->appContext->getProject () . "/environments";
         
         $environmentArray = $this->cmDataManager->getDataForContext ( $serverurl, $this->appContext->getAPIKey (), $querystring );
         if ($environmentArray == false) {
-            $this->logHelper->log ( DEBUG, "Could not retreive data from cloudmunch" );
+            $this->logHelper->log ( DEBUG, DATAERROR );
             return false;
         }
         
-        $environmentdata = $environmentArray->data;
-        return $environmentdata;
+      
+        return $environmentArray->data;
     }
     
     /**
@@ -71,11 +78,11 @@ class EnvironmentHelper {
             $querystring = "filter=" . json_encode ( $filterdata );
         }
         
-        $serverurl = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/environments/" . $environmentID;
+        $serverurl = $this->appContext->getMasterURL () . APPLICATIONS . $this->appContext->getProject () . ENVIRONMENTS . $environmentID;
         $environmentArray = $this->cmDataManager->getDataForContext ( $serverurl, $this->appContext->getAPIKey (), $querystring );
         
         if ($environmentArray == false) {
-            $this->logHelper->log ( DEBUG, "Could not retreive data from cloudmunch" );
+            $this->logHelper->log ( DEBUG, DATAERROR );
             return false;
         }
         
@@ -128,7 +135,7 @@ class EnvironmentHelper {
         
         $comment = "Adding environment with name $environmentName";
         
-        $serverurl = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/environments";
+        $serverurl = $this->appContext->getMasterURL () . APPLICATIONS . $this->appContext->getProject () . "/environments";
         $retArray = $this->cmDataManager->putDataForContext ( $serverurl, $this->appContext->getAPIKey (), $environmentData, $comment );
         
         if ($retArray === false) {
@@ -146,15 +153,15 @@ class EnvironmentHelper {
      */
 
     function setStage($data){
-        if (is_array($data) && isset($data['stage']) && !empty($data['stage']) && !is_null($data['stage'])) {
+        if (is_array($data) && isset($data[STAGE]) && !empty($data[STAGE]) && !is_null($data[STAGE])) {
             // return the same if stage is already set with required format
-            if (is_array($data['stage']) || is_object($data['stage'])){
-                return $data['stage'];
+            if (is_array($data[STAGE]) || is_object($data[STAGE])){
+                return $data[STAGE];
             } else {
-                $stage = $this->getStage("id", $data['stage']);
+                $stage = $this->getStage("id", $data[STAGE]);
                 // if name is set as value
                 if (is_null($stage)) {
-                    $stage = $this->getStage("name", $data['stage']);
+                    $stage = $this->getStage("name", $data[STAGE]);
                 }
                 // set to default stage
                 if (is_null($stage)) {
@@ -176,16 +183,16 @@ class EnvironmentHelper {
      *          String  value
      */
 
-    function getStage($key, $value){
-        $url    = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/stages" ;
+    function getStage($key, $invalue){
+        $url    = $this->appContext->getMasterURL () . APPLICATIONS . $this->appContext->getProject () . "/stages" ;
         $data   = $this->cmDataManager->getDataForContext($url, $this->appContext->getAPIKey(), null);
         $stages = $data->data;
         $stageDetails = [];
         if ($stages) {
-            foreach ($stages as $keyName => $stage) {
-                if ($stage->$key == $value) {
-                    $stageDetails[name] = isset($stage->name)?$stage->name:"";
-                    $stageDetails[id]   = isset($stage->id)?$stage->id:"";
+            foreach ($stages as $value) {
+                if ($value->$key == $invalue) {
+                    $stageDetails[name] = isset($value->name)?$value->name:"";
+                    $stageDetails[id]   = isset($value->id)?$value->id:"";
                     return $stageDetails;
                 }
             }
@@ -202,7 +209,7 @@ class EnvironmentHelper {
      *          JsonObject Environment Data
      */
     function updateEnvironment($environmentID, $environmentData, $comment = null) {
-        $serverurl = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/environments/" . $environmentID;
+        $serverurl = $this->appContext->getMasterURL () . APPLICATIONS . $this->appContext->getProject () . ENVIRONMENTS . $environmentID;
         $this->appContext->setEnvironment ( $environmentID );
         $this->cmDataManager->updateDataForContext ( $serverurl, $this->appContext->getAPIKey (), $environmentData, $comment );
     }
@@ -386,11 +393,11 @@ class EnvironmentHelper {
      * @return boolean
      */
     function checkIfEnvironmentExists($environmentID) {
-        $serverurl = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/environments/" . $environmentID;
+        $serverurl = $this->appContext->getMasterURL () . APPLICATIONS . $this->appContext->getProject () . ENVIRONMENTS . $environmentID;
         
         $environmentArray = $this->cmDataManager->getDataForContext ( $serverurl, $this->appContext->getAPIKey (), "" );
-        if ($environmentArray == false) {
-            $this->logHelper->log ( DEBUG, "Could not retreive data from cloudmunch" );
+        if ($environmentArray === false) {
+            $this->logHelper->log ( DEBUG, DATAERROR );
             return false;
         }
         
@@ -413,7 +420,7 @@ class EnvironmentHelper {
         $tiers = $envdetails->tiers;
         $assetNames = array ();
         foreach ( $tiers as $tier ) {
-            foreach ( $tier as $key => $value ) {
+            foreach ( $tier as  $value ) {
                 $assets = $value->assets;
                 
                 array_merge ( $assetNames, $assets );
@@ -439,8 +446,7 @@ class EnvironmentHelper {
         $envdetails = $this->getEnvironment ( $environmentID, null );
         $tiers = $envdetails->tiers;
         
-        $tierbackup = array ();
-        $assetNames = array ();
+        
         
         foreach ( $tiers as $tier=>$tierdetail) {
                         if (($key = array_search ($assetID,$tierdetail->assets)) !== false) {

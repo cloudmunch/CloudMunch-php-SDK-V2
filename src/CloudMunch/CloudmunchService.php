@@ -149,7 +149,7 @@ class CloudmunchService {
             }
             
             if (is_array($queryParams) && (count($queryParams) > 0)) {
-                $i = 1;
+               
 
                 foreach ($queryParams as $key => $value) {
                     if($key === "filter"){
