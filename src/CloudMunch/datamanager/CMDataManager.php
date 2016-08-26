@@ -67,7 +67,7 @@ function getDataForContext($url,$apikey,$querystring) {
 	if((!empty($resultdecode->request->status))&&($resultdecode->request->status !== self::SUCCESS)) {
      	$this->logHelper->log(ERROR, $resultdecode->request->message);
 		if($resultdecode->request->request_id) {
-			$this->logHelper->log(ERROR,self:REQUESTID." : " . $resultdecode->request->request_id);
+			$this->logHelper->log(ERROR,self::REQUESTID." : " . $resultdecode->request->request_id);
 			$this->notificationHandler->sendSlackNotification($resultdecode->request->message.".". self::REQUESTID." : ".$resultdecode->request->request_id);
 		}
 		return false;
