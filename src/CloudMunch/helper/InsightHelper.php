@@ -432,16 +432,13 @@ class InsightHelper
 
         if ($isInsightIDEmpty || $isDataStoreIDEmpty || $isExtractNameEmpty) {
             $this->logHelper->log(static::DEBUG, 'Insight id, datastore id and extract name is needed to create an extract');
-
             return false;
         }
 
         $extractID = null;
         $extractID = $this->getInsightDataStoreExtractID($insightID, $dataStoreID, $extractName);
 
-        if ($extractID) {
-            return $extractID;
-        } else {
+        if (!$extractID) {
             $this->logHelper->log('INFO', 'Attempting creation of extract with name '.$extractName.'...');
 
             $params =  array(
@@ -455,11 +452,12 @@ class InsightHelper
             $response = $this->cmService->updateCustomContextData($params, $data, "POST");
 
             if ($response) {
-                return $response->id;
+                $extractID = $response->id;
             } else {
-                return false;
+                $extractID = false;
             }
         }
+        return $extractID;
     }
 
     /**
@@ -475,16 +473,13 @@ class InsightHelper
 
         if ($isInsightIDEmpty || $isDataStoretNameEmpty) {
             $this->logHelper->log(static::DEBUG, 'Insight id and datastore name is needed to create a datastore');
-
             return false;
         }
 
         $dataStoreID = null;
         $dataStoreID = $this->getInsightDataStoreID($insightID, $dataStoretName);
         
-        if ($dataStoreID) {
-            return $dataStoreID;
-        } else {
+        if (!$dataStoreID) {
             $this->logHelper->log('INFO', 'Attempting creation of datastore with name '.$dataStoretName.'...');
 
             $params = array(
@@ -496,11 +491,12 @@ class InsightHelper
             $response = $this->cmService->updateCustomContextData($params, $data, "POST");
 
             if ($response) {
-                return $response->id;
+                $dataStoreID = $response->id;
             } else {
-                return false;
+                $dataStoreID = false;
             }
         }
+        return $dataStoreID;
     }
 
     /**
@@ -518,17 +514,13 @@ class InsightHelper
 
         if ($isInsightIDEmpty || $isReportIDEmpty || $isCardNameEmpty) {
             $this->logHelper->log(static::DEBUG, 'Insight id, report id and report card name is needed to create a report card');
-
             return false;
         }
 
         $cardID = null;
-
         $cardID = $this->getInsightReportCardID($insightID, $reportID, $cardName);
 
-        if ($cardID) {
-            return $cardID;
-        } else {
+        if (!$cardID) {
             $this->logHelper->log('INFO', 'Attempting creation of report card with name '.$cardName.'...');
 
             $params =  array(
@@ -541,11 +533,12 @@ class InsightHelper
             $response = $this->cmService->updateCustomContextData($params, $data, "POST");
 
             if ($response) {
-                return $response->id;
+                $cardID = $response->id;
             } else {
-                return false;
+                $cardID = false;
             }
         }
+        return $cardID;
     }
 
     /**
@@ -558,16 +551,13 @@ class InsightHelper
     {
         if (is_null($insightID) || empty($insightID) || is_null($reportName) || empty($reportName)) {
             $this->logHelper->log(static::DEBUG, 'Insight id and report name is needed to create a report');
-
             return false;
         }
 
         $reportID = null;
         $reportID = $this->getInsightReportId($insightID, $reportName);
 
-        if ($reportID) {
-            return $reportID;
-        } else {
+        if (!$reportID) {
             $this->logHelper->log('INFO', 'Attempting creation of report with name '.$reportName.'...');
 
             $params =  array(
@@ -578,11 +568,12 @@ class InsightHelper
 
             $response = $this->cmService->updateCustomContextData($params, $data, "POST");
             if ($response) {
-                return $response->id;
+                $reportID = $response->id;
             } else {
-                return false;
+                $reportID = false;
             }
         }
+        return $reportID;
     }
 
     /*******************************************************************************/
@@ -621,8 +612,8 @@ class InsightHelper
                 $sprintHashData["id"]           = $sprintData->sprint_id;
                 $sprintHashData["name"]         = $sprintData->sprint_name;
                 $sprintHashData["status"]       = $sprintData->sprint_status;
-                $sprintHashData["startDate"]    = $startDate->format("Y-m-d");
-                $sprintHashData["endDate"]      = $endDate->format("Y-m-d");
+                $sprintHashData["startDate"]    = $startDate->format(static::DATE_VALUE);
+                $sprintHashData["endDate"]      = $endDate->format(static::DATE_VALUE);
                 $sprintHashData["completeDate"] = $sprintData->completeDate;
 
                 $sprintHash[$sprintData->sprint_id] = $sprintHashData;
@@ -720,7 +711,7 @@ class InsightHelper
     {
         $iCount       = 0;
         $duration_arr = [];
-        $curr_date    = is_null($curr_date) ? date("Y-m-d") : $curr_date;
+        $curr_date    = is_null($curr_date) ? date(static::DATE_VALUE) : $curr_date;
         $oneDay = ' -1 day';
 
         switch ($projectionUnit) {
