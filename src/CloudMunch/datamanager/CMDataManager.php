@@ -352,12 +352,12 @@ function do_curl($url, $headers = null, $requestType = null, $data = null, $curl
 	curl_close($ch);
 	if ($responseCode != 200) {
 		if ($responseCode === 0) {
-			$this->logHelper->log("ERROR", "Interface system url host could not be resolved. Please check configurations/settings");
+			$this->logHelper->log(ERROR, "Interface system url host could not be resolved. Please check configurations/settings");
 		} elseif ($responseCode === 401) {
-			$this->logHelper->log("ERROR", "Interface system url host could not be accessed due to authentication failure");
+			$this->logHelper->log(ERROR, "Interface system url host could not be accessed due to authentication failure");
 		} else {
 		
-			$this->logHelper->log("ERROR", "Service is not available");
+			$this->logHelper->log(ERROR, "Service is not available");
 		}
 	}
 	$response = array();
@@ -403,10 +403,16 @@ function startsWith($haystack, $needle){
 }
 
 function html2txt($document){
-	$search = array('@<script[^>]*?>.*?</script>@si',  // Strip out javascript
-			'@<[\/\!]*?[^<>]*?>@si',            // Strip out HTML tags
-			'@<style[^>]*?>.*?</style>@siU',    // Strip style tags properly
-			'@<![\s\S]*?--[ \t\n\r]*>@'         // Strip multi-line comments including CDATA
+	/*
+	 * Strip out javascript
+	 * Strip out HTML tags
+	 * Strip style tags properly
+	 * Strip multi-line comments including CDATA
+	 */
+	$search = array('@<script[^>]*?>.*?</script>@si',  
+			'@<[\/\!]*?[^<>]*?>@si',            
+			'@<style[^>]*?>.*?</style>@siU',    
+			'@<![\s\S]*?--[ \t\n\r]*>@'         
 	);
 	$text = preg_replace($search, '_$_', $document);
 	$textx = explode('_$_', $text);

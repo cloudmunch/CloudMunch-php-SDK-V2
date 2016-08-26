@@ -16,7 +16,6 @@ use CloudMunch\AppContext;
 use CloudMunch\loghandling\LogHandler;
 use Cloudmunch\CloudmunchConstants;
 
-require_once ("CloudMunch\CloudmunchConstants.php");
 
 
 
@@ -26,7 +25,8 @@ require_once ("CloudMunch\CloudmunchConstants.php");
  *
  */
 class AssetHelper{
-	
+	const APPLICATIONS="/applications/";
+	const ASSETS="/assets/";
 	private $appContext = null;
 	private $cmDataManager = null;
 	private $logHelper = null;
@@ -49,15 +49,15 @@ function getAsset($assetID,$filerdata){
 	if($filerdata !== null){
 		$querystring="filter=".json_encode($filerdata);
 	}
-	$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$assetID;
+	$serverurl=$this->appContext->getMasterURL().APPLICATIONS.$this->appContext->getProject().ASSETS.$assetID;
 	
 	$assetArray = $this->cmDataManager->getDataForContext($serverurl, $this->appContext->getAPIKey(),$querystring);
-	if($assetArray == false){
+	if(is_bool ($assetArray) && !$assetArray){
 		$this->logHelper->log ( ERROR, "Could not retreive data from cloudmunch");
 		return false;
 	}
 	
-	//$assetArray = json_decode($assetArray);
+	
 	$assetdata=$assetArray->data;
 	if($assetdata == null){
 		$this->logHelper->log ( ERROR, "Asset does not exist");
@@ -90,15 +90,15 @@ function  addAsset($assetname,$assettype,$assetStatus,$assetExternalRef,$assetDa
 	$assetData[type]=$assettype;
 	$assetData[status]=$assetStatus;
 	$assetData[external_reference]=$assetExternalRef;
-	$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/";
+	$serverurl=$this->appContext->getMasterURL().APPLICATIONS.$this->appContext->getProject().ASSETS;
 	$retArray=$this->cmDataManager->putDataForContext($serverurl,$this->appContext->getAPIKey(),$assetData);
 	
 	if($retArray===false){
 		return false;
 	}
 	
-	$retdata=$retArray->data;
-	return $retdata;
+	
+	return $retArray->data;;
 	
 }
 
@@ -108,7 +108,7 @@ function  addAsset($assetname,$assettype,$assetStatus,$assetExternalRef,$assetDa
  * @param JsonObject Asset Data
  */
 function  updateAsset($assetID,$assetData){
-	$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$assetID;
+	$serverurl=$this->appContext->getMasterURL().APPLICATIONS.$this->appContext->getProject().ASSETS.$assetID;
 	
 	$this->cmDataManager->updateDataForContext($serverurl,$this->appContext->getAPIKey(),$assetData);
 
@@ -119,7 +119,7 @@ function  updateAsset($assetID,$assetData){
  * @param String Asset ID
  */
 function deleteAsset($assetID){
-	$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$assetID;
+	$serverurl=$this->appContext->getMasterURL().APPLICATIONS.$this->appContext->getProject().ASSETS.$assetID;
 	
 	$this->cmDataManager->deleteDataForContext($serverurl,$this->appContext->getAPIKey());
 }
@@ -146,10 +146,10 @@ function updateStatus($assetID,$status){
  * @return boolean
  */
 function checkIfAssetExists($assetID){
-	$serverurl=$this->appContext->getMasterURL()."/applications/".$this->appContext->getProject()."/assets/".$assetID;
+	$serverurl=$this->appContext->getMasterURL().APPLICATIONS.$this->appContext->getProject().ASSETS.$assetID;
 	
 	$assetArray = $this->cmDataManager->getDataForContext($serverurl, $this->appContext->getAPIKey(),"");
-	if($assetArray == false){
+	if($assetArray === false){
 		return false;
 	}
 	

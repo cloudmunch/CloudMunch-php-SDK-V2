@@ -78,7 +78,7 @@ class CloudmunchService {
 				"context" => $context,
 				"id" => $id 
 		);
-		//return $this->cmDataManager->notifyUsersInCloudmunch ( $this->appContext->getMasterURL (), $message, $dataarray, $this->appContext->getDomainName () );
+		
 	}
 	
 	
@@ -147,8 +147,8 @@ class CloudmunchService {
 					break;
 				}
 			}
-
-			if (is_array($queryParams) && ($querySize = count($queryParams)) > 0) {
+			
+			if (is_array($queryParams) && (count($queryParams) > 0)) {
 				$i = 1;
 
 				foreach ($queryParams as $key => $value) {

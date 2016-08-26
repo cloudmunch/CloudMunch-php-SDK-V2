@@ -80,8 +80,7 @@ abstract class AppAbstract {
 		for($i = 0; $i < sizeof ( $argArray ); $i ++) {
 			
 			switch ($argArray [$i]) {
-				default:
-				   continue;
+				
 				case "-jsoninput" :
 					{
 						
@@ -102,6 +101,8 @@ abstract class AppAbstract {
 						
 						
 					}
+					default:
+						continue;
 			}
 		}
 		
@@ -448,7 +449,7 @@ abstract class AppAbstract {
 		}
 		$variablesArray = $tmp;
 
-		if ($this->newVer) {
+		
 			$fileloc = $this->appContext->getReportsLocation () . "/" . $this->appContext->getStepID () . ".out";
 			$varlist = null;
 			if(file_exists($fileloc)){
@@ -474,9 +475,7 @@ abstract class AppAbstract {
 	    	    $this->envHelper = $this->getCloudmunchEnvironmentHelper();
 			    $this->envHelper->updateVariables($environment_id, $variablesArray);
 	    	}
-		} else {
-			echo "\n<{\"" . $variablename . "\":\"" . $variable . "\"}>" . PHP_EOL;
-		}
+		
 		
 	}
 
