@@ -78,31 +78,12 @@ class CloudmunchService {
 				"context" => $context,
 				"id" => $id 
 		);
-		return $this->cmDataManager->notifyUsersInCloudmunch ( $this->appContext->getMasterURL (), $message, $dataarray, $this->appContext->getDomainName () );
+		//return $this->cmDataManager->notifyUsersInCloudmunch ( $this->appContext->getMasterURL (), $message, $dataarray, $this->appContext->getDomainName () );
 	}
 	
-	/**
-	 * Updates data in cloudmunch for the context.
-	 * 
-	 * @param string $context
-	 *        	: Context for which data is to be updated.
-	 * @param array $dataArray
-	 *        	: Array of data to be updated.
-	 */
-	public function updateDataContext($context, $dataArray) {
-		return $this->cmDataManager->updateContext ( $this->appContext->getMasterURL (), $context, $this->appContext->getDomainName (), $dataArray );
-	}
 	
-	/**
-	 * Returns context object.
-	 * 
-	 * @param string $context
-	 *        	: Context for which data is to be retreived.
-	 */
-	public function getDataFromContext($context) {
-		return $this->cmDataManager->getDataForContext ( $this->appContext->getMasterURL (), $context, $this->appContext->getDomainName () );
-	}
-
+	
+	
 	/**
 	 * 
 	 * @param array $contextArray associative array with key as context and value as its id
