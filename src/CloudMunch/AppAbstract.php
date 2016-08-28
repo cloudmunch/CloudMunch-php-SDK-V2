@@ -181,7 +181,8 @@ abstract class AppAbstract {
             $this->setAppContext ( $appContext );
         
         $this->createLogHandler();
-        return $this->setParameterObject ( $jsonParams );
+         $this->setParameterObject ( $jsonParams );
+         return true;
     }
     
     /**
