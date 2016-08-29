@@ -76,4 +76,24 @@ class EnvironmentHelperTest extends PHPUnit_Framework_TestCase
 		$this->assertFalse($actual);
 	
 	}
+	
+	
+	/**
+	 * @covers CloudMunch\helper\EnvironmentHelper::addEnvironment
+	 */
+	public function test_addEnvironment(){
+	
+	
+		$appcontext = $this->getMockBuilder("CloudMunch\AppContext")
+		->getMock();
+	
+		$loghandler = $this->getMockBuilder("CloudMunch\loghandling\LogHandler")
+		->setConstructorArgs(array($appcontext))
+		->getMock();
+		$environmenthelper=new EnvironmentHelper($appcontext,$loghandler);
+		$actual=$environmenthelper->addEnvironment("envname", "status",array());
+		$this->assertFalse($actual);
+	
+	}
+	
 }

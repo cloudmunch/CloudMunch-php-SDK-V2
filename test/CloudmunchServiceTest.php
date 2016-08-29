@@ -37,12 +37,12 @@ class CloudmunchServiceTest extends PHPUnit_Framework_TestCase
 		$appcontext = $this->getMockBuilder("CloudMunch\AppContext")
 		->getMock();
 		
-		/* $loghandler = $this->getMockBuilder("CloudMunch\loghandling\LogHandler")
+		 $loghandler = $this->getMockBuilder("CloudMunch\loghandling\LogHandler")
 		->setConstructorArgs(array($appcontext))
-		->getMock(); */
+		->getMock(); 
 		
-		$loghandler = $this->getMockBuilder("CloudMunch\loghandling\LogHandler")
-		->getMock();
+		/* $loghandler = $this->getMockBuilder("CloudMunch\loghandling\LogHandler")
+		->getMock(); */
 		
 		$cmservice=new CloudmunchService($appcontext,$loghandler);
 		$actual=$cmservice->sendNotification("test","1","2","test","test");
