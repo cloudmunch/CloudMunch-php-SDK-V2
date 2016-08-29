@@ -27,7 +27,7 @@ class AppAbstractTest extends PHPUnit_Framework_TestCase
 	}
 	
 	/**
-	 * @covers AppAbstract::getInput
+	 * @covers CloudMunch\AppAbstract::getInput
 	 */
 	public function test_getInput(){
 		
