@@ -1,0 +1,19 @@
+<phpunit>
+  <testsuites>
+    <testsuite name="PHP-SDK">
+      <directory>../../test</directory>
+    </testsuite>
+  </testsuites>
+  <filter>
+      <whitelist addUncoveredFilesFromWhitelist="true">
+        <directory suffix=".php">../../src</directory>
+      </whitelist>
+  </filter>
+  <logging>
+      <log type="coverage-html" target="../../reports/HTML" lowUpperBound="35"
+       highLowerBound="70"/>
+      <log type="coverage-clover" target="../../reports/coverage.xml"/>
+      <log type="junit" target="../../reports/logfile.xml" logIncompleteSkipped="false"/>
+      <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+  </logging>
+</phpunit>
