@@ -18,12 +18,10 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../src/CloudMunch/helper
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../src/CloudMunch/CloudmunchService.php';
 
 use CloudMunch\CloudmunchService;
-define('APPABSTRACT', 'AppAbstract');
 
-define('GET_LOG_HANDLER', 'getLogHandler');
-define('DESTRUCT', '__destruct');
 
-class AppAbstractTest extends PHPUnit_Framework_TestCase
+
+class CloudmunchServiceTest extends PHPUnit_Framework_TestCase
 {
 	
 	function __construct()
@@ -39,9 +37,13 @@ class AppAbstractTest extends PHPUnit_Framework_TestCase
 		$appcontext = $this->getMockBuilder("CloudMunch\AppContext")
 		->getMock();
 		
-		$loghandler = $this->getMockBuilder("CloudMunch\loghandling\LogHandler")
+		/* $loghandler = $this->getMockBuilder("CloudMunch\loghandling\LogHandler")
 		->setConstructorArgs(array($appcontext))
+		->getMock(); */
+		
+		$loghandler = $this->getMockBuilder("CloudMunch\loghandling\LogHandler")
 		->getMock();
+		
 		$cmservice=new CloudmunchService($appcontext,$loghandler);
 		$actual=$cmservice->sendNotification("test","1","2","test","test");
 		$this->assertFalse($actual);
