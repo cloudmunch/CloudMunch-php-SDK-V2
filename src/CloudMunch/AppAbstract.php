@@ -311,7 +311,7 @@ abstract class AppAbstract {
 	 *
 	 * @return IntegrationHelper integrationhelper
 	 */
-	function getCloudmunchAssetHelper() {
+	function getCloudmunchIntegrationHelper() {
 		$integrationhelper = new IntegrationHelper ( $this->appContext,$this->logHandler );
 		return $integrationhelper;
 	}
