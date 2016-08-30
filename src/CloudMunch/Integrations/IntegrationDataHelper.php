@@ -14,7 +14,7 @@ namespace CloudMunch\Integrations;
  * @author rosmi
  *
  */
-  class IntegrationHelper{
+  class IntegrationDataHelper{
   	private $logHelper=null;
   	
   	/**
