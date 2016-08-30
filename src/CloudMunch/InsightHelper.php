@@ -9,15 +9,11 @@
  *  Rosmi Chandy rosmi@cloudmunch.com
  */
 
-namespace CloudMunch\helper;
+namespace CloudMunch;
 
-use \DateTime;
-use CloudMunch\datamanager\CMDataManager;
-use CloudMunch\AppContext;
-use CloudMunch\loghandling\LogHandler;
-use CloudMunch\CloudmunchService;
-use Cloudmunch\CloudmunchConstants;
-
+use \DateTime;;
+require_once 'CloudmunchConstants.php';
+require_once 'AppErrorLogHandler.php';
 
 /**
  * This is a helper class for environments. User can manage environments in cloudmunch using this helper.
@@ -27,23 +23,6 @@ use Cloudmunch\CloudmunchConstants;
  */
 class InsightHelper
 {
-    const RESOURCES = "resources";
-    const FIELDS    = "fields";
-    const FILTER    = "filter";
-    const DEBUG     = 'DEBUG';
-    const ERROR     = 'ERROR';
-    const EXTRACTS  = 'extracts';
-    const DATASTORES      = 'datastores';
-    const INSIGHT_REPORTS = 'insight_reports';
-    const INSIGHT_CARDS   = 'insight_cards';
-    const DATE_VALUE      = 'Y-m-d';
-    const SPRINT          = 'sprint';
-    const LABEL           = 'label';
-    const TOLERANCE_STATE = 'toleranceState';
-    const TOLERANCE_DESCRIPTION = 'toleranceDescription';
-    const TOLERANCE_HIT = 'toleranceHit';
-    const KANBAN        = 'kanban';
-
     private $appContext = null;
     private $cmDataManager = null;
     private $logHelper = null;
@@ -54,7 +33,7 @@ class InsightHelper
         $this->appContext = $appContext;
         $this->logHelper  = $logHandler;
         $this->cmService  = new CloudmunchService($appContext, $this->logHelper);
-        $this->cmDataManager = new CMDataManager($this->logHelper, $appContext);
+        $this->cmDataManager = new cmDataManager($this->logHelper, $appContext);
     }
 
     /**
@@ -65,11 +44,11 @@ class InsightHelper
     public function getResources($type)
     {
         if($type) {
-            $contextArray = array(static::RESOURCES => '');
-            $queryOptions = array(static::FILTER => array('type' => $type), static::FIELDS => '*');
+            $contextArray = array('resources' => '');
+            $queryOptions = array('filter' => array('type' => $type), 'fields' => '*');
             return $this->cmService->getCustomContextData($contextArray, $queryOptions);
         } else {
-            $this->logHelper->log(static::DEBUG, 'Resource type is not provided!');
+            $this->logHelper->log('DEBUG', 'Resource type is not provided!');
             return false;
         }
     }
@@ -90,17 +69,19 @@ class InsightHelper
      */
     public function getInsightDataStoreExtracts($insightID, $dataStoreID, $queryOptions, $extractID = '')
     {
+        // /insights/{insight_id}/datastores/{datastore_id}/extracts/{extract_id}
         if (is_null($insightID) || empty($insightID) || is_null($dataStoreID) || empty($dataStoreID)) {
-            $this->logHelper->log(static::DEBUG, 'Insight id and datastore id is needed to gets its extract details');
+            $this->logHelper->log('DEBUG', 'Insight id and datastore id is needed to gets its extract details');
 
             return false;
         }
 
         $params =  array(
-                            static::RESOURCES   => $insightID,
-                            static::DATASTORES => $dataStoreID,
-                            static::EXTRACTS   => $extractID,
+                            'resources'   => $insightID,
+                            'datastores' => $dataStoreID,
+                            'extracts'   => $extractID,
                         );
+      //  var_dump($queryOptions);
         return $this->cmService->getCustomContextData($params, $queryOptions);
     }
 
@@ -113,15 +94,17 @@ class InsightHelper
      */
     public function getInsightDataStores($insightID, $queryOptions, $dataStoreID = '')
     {
+        // /insights/{insight_id}/datastores/{datastore_id}
+
         if (is_null($insightID) || empty($insightID)) {
-            $this->logHelper->log(static::DEBUG, 'Insight id is needed to gets its datastore details');
+            $this->logHelper->log('DEBUG', 'Insight id is needed to gets its datastore details');
 
             return false;
         }
 
         $params =  array(
-                            static::RESOURCES   => $insightID,
-                            static::DATASTORES => $dataStoreID,
+                            'resources'   => $insightID,
+                            'datastores' => $dataStoreID,
                         );
 
         return $this->cmService->getCustomContextData($params, $queryOptions);
@@ -137,16 +120,18 @@ class InsightHelper
      */
     public function getInsightReportCards($insightID, $reportID, $queryOptions, $cardID = '')
     {
+        // /insights/{insight_id}/insight_reports/{insight_report_id}/insight_cards/{insight_card_id}
+
         if (is_null($insightID) || empty($insightID) || is_null($reportID) || empty($reportID)) {
-            $this->logHelper->log(static::DEBUG, 'Insight id and report id is needed to gets its report card details');
+            $this->logHelper->log('DEBUG', 'Insight id and report id is needed to gets its report card details');
 
             return false;
         }
 
         $params =  array(
-                            static::RESOURCES        => $insightID,
-                            static::INSIGHT_REPORTS => $reportID,
-                            static::INSIGHT_CARDS   => $cardID,
+                            'resources'        => $insightID,
+                            'insight_reports' => $reportID,
+                            'insight_cards'   => $cardID,
                         );
 
         return $this->cmService->getCustomContextData($params, $queryOptions);
@@ -161,15 +146,17 @@ class InsightHelper
      */
     public function getInsightReports($insightID, $queryOptions, $reportID = '')
     {
+        // /insights/{insight_id}/insight_reports/{datastore_id}
+
         if (is_null($insightID) || empty($insightID)) {
-            $this->logHelper->log(static::DEBUG, 'Insight id is needed to gets its report details');
+            $this->logHelper->log('DEBUG', 'Insight id is needed to gets its report details');
 
             return false;
         }
 
         $params =  array(
-                            static::RESOURCES        => $insightID,
-                            static::INSIGHT_REPORTS => $reportID,
+                            'resources'        => $insightID,
+                            'insight_reports' => $reportID,
                         );
 
         return $this->cmService->getCustomContextData($params, $queryOptions);
@@ -184,17 +171,16 @@ class InsightHelper
      */
     public function getInsightDataStoreExtractID($insightID, $dataStoreID, $extractName)
     {
-        $isInsightIDEmpty   = is_null($insightID)   || empty($insightID);
-        $isDataStoreIDEmpty = is_null($dataStoreID) || empty($dataStoreID);
-        $isExtractNameEmpty = is_null($extractName) || empty($extractName);
-        
-        if ($isInsightIDEmpty || $isDataStoreIDEmpty || $isExtractNameEmpty) {
-            $this->logHelper->log(static::DEBUG, 'Insight id, datastore id and extract name is needed to get extract id');
+        // /insights/{insight_id}/datastores/{datastore_id}
+
+        if (is_null($insightID) || empty($insightID) || is_null($dataStoreID) || empty($dataStoreID) || is_null($extractName) || empty($extractName)) {
+            $this->logHelper->log('DEBUG', 'Insight id, datastore id and extract name is needed to get extract id');
+
             return false;
         }
 
         $queryOptions =  array(
-                                    static::FILTER => array(
+                                    'filter' => array(
                                                         'name' => $extractName
                                                     ) 
                                );
@@ -215,15 +201,16 @@ class InsightHelper
      */
     public function getInsightDataStoreID($insightID, $dataStoreName)
     {
-        $isInsightIDEmpty   = is_null($insightID)   || empty($insightID);
-        if ($isInsightIDEmpty || is_null($dataStoreName) || empty($dataStoreName)) {
-            $this->logHelper->log(static::DEBUG, 'Insight id and datastore name is needed to get datastore id');
+        // /insights/{insight_id}/datastores/{datastore_id}
+
+        if (is_null($insightID) || empty($insightID) || is_null($dataStoreName) || empty($dataStoreName)) {
+            $this->logHelper->log('DEBUG', 'Insight id and datastore name is needed to get datastore id');
 
             return false;
         }
 
         $queryOptions =  array(
-                                    static::FILTER => array(
+                                    'filter' => array(
                                                         "name" => $dataStoreName
                                                     )
                                );
@@ -246,18 +233,16 @@ class InsightHelper
      */
     public function getInsightReportCardID($insightID, $reportID, $cardName)
     {
-        $isInsightIDEmpty = is_null($insightID) || empty($insightID);
-        $isReportIDEmpty  = is_null($reportID)  || empty($reportID);
-        $isCardNameEmpty  = is_null($cardName)  || empty($cardName);
-        
-        if ($isInsightIDEmpty || $isReportIDEmpty || $isCardNameEmpty) {
-            $this->logHelper->log(static::DEBUG, 'Insight id, report id and card name is needed to get report card id');
+        // /insights/{insight_id}/insight_reports/{insight_report_id}/insight_cards/{insight_card_id}
+
+        if (is_null($insightID) || empty($insightID) || is_null($reportID) || empty($reportID) || is_null($cardName) || empty($cardName)) {
+            $this->logHelper->log('DEBUG', 'Insight id, report id and card name is needed to get report card id');
 
             return false;
         }
 
         $queryOptions =  array(
-                                    static::FILTER => array(
+                                    'filter' => array(
                                                         "name" => $cardName
                                                     )
                                );
@@ -279,14 +264,16 @@ class InsightHelper
      */
     public function getInsightReportID($insightID, $reportName)
     {
+        // /insights/{insight_id}/insight_reports/{insight_report_id}
+
         if (is_null($insightID) || empty($insightID) || is_null($reportName) || empty($reportName)) {
-            $this->logHelper->log(static::DEBUG, 'Insight id and report name is needed to get report id');
+            $this->logHelper->log('DEBUG', 'Insight id and report name is needed to get report id');
 
             return false;
         }
 
         $queryOptions =  array(
-                                    static::FILTER => array(
+                                    'filter' => array(
                                                         "name" => $reportName
                                                     )
                                );
@@ -314,20 +301,17 @@ class InsightHelper
      */
     public function updateInsightDataStoreExtract($insightID, $dataStoreID, $extractID, $data)
     {
-        $isInsightIDEmpty   = is_null($insightID)   || empty($insightID);
-        $isDataStoreIDEmpty = is_null($dataStoreID) || empty($dataStoreID);
-        $isExtractIDEmpty   = is_null($extractID)   || empty($extractID);
-
-        if ($isInsightIDEmpty || $isDataStoreIDEmpty || $isExtractIDEmpty || is_null($data)) {
-            $this->logHelper->log(static::DEBUG, 'Insight id, datastore id, extract id and data is needed to update extract details');
+        // /insights/{insight_id}/datastores/{datastore_id}/extract/{extract_id}
+        if (is_null($insightID) || empty($insightID) || is_null($dataStoreID) || empty($dataStoreID) || is_null($extractID) || empty($extractID) || is_null($data)) {
+            $this->logHelper->log('DEBUG', 'Insight id, datastore id, extract id and data is needed to update extract details');
 
             return false;
         }
 
         $params =  array(
-                            static::RESOURCES   => $insightID,
-                            static::DATASTORES => $dataStoreID,
-                            static::EXTRACTS   => $extractID,
+                            'resources'   => $insightID,
+                            'datastores' => $dataStoreID,
+                            'extracts'   => $extractID,
                         );
 
         return $this->cmService->updateCustomContextData($params, $data);
@@ -341,18 +325,17 @@ class InsightHelper
      */
     public function updateInsightDataStore($insightID, $dataStoreID, $data)
     {
-        $isInsightIDEmpty   = is_null($insightID)   || empty($insightID);
-        $isDataStoreIDEmpty = is_null($dataStoreID) || empty($dataStoreID);
-        
-        if ($isInsightIDEmpty || $isDataStoreIDEmpty || is_null($data)) {
-            $this->logHelper->log(static::DEBUG, 'Insight id, datastore id and data is needed to update datastore details');
+        // /insights/{insight_id}/datastores/{datastore_id}
+
+        if (is_null($insightID) || empty($insightID) || is_null($dataStoreID) || empty($dataStoreID) || is_null($data)) {
+            $this->logHelper->log('DEBUG', 'Insight id, datastore id and data is needed to update datastore details');
 
             return false;
         }
 
         $params =  array(
-                            static::RESOURCES   => $insightID,
-                            static::DATASTORES => $dataStoreID,
+                            'resources'   => $insightID,
+                            'datastores' => $dataStoreID,
                         );
 
         return $this->cmService->updateCustomContextData($params, $data);
@@ -367,20 +350,18 @@ class InsightHelper
      */
     public function updateInsightReportCard($insightID, $reportID, $cardID, $data)
     {
-        $isInsightIDEmpty = is_null($insightID) || empty($insightID);
-        $isReportIDEmpty  = is_null($reportID)  || empty($reportID);
-        $isCardIDEmpty    = is_null($cardID)    || empty($cardID);
+        // /insights/{insight_id}/insight_reports/{insight_report_id}/insight_cards/{insight_card_id}
 
-        if ($isInsightIDEmpty || $isReportIDEmpty || $isCardIDEmpty || is_null($data)) {
-            $this->logHelper->log(static::DEBUG, 'Insight id, report id, card id and data is needed to update report card details');
+        if (is_null($insightID) || empty($insightID) || is_null($reportID) || empty($reportID) || is_null($cardID) || empty($cardID) || is_null($data)) {
+            $this->logHelper->log('DEBUG', 'Insight id, report id, card id and data is needed to update report card details');
 
             return false;
         }
 
         $params =  array(
-                            static::RESOURCES => $insightID,
-                            static::INSIGHT_REPORTS => $reportID,
-                            static::INSIGHT_CARDS => $cardID,
+                            'resources' => $insightID,
+                            'insight_reports' => $reportID,
+                            'insight_cards' => $cardID,
                         );
 
         return $this->cmService->updateCustomContextData($params, $data);
@@ -394,18 +375,17 @@ class InsightHelper
      */
     public function updateInsightReport($insightID, $reportID, $data)
     {
-        $isInsightIDEmpty = is_null($insightID) || empty($insightID);
-        $isReportIDEmpty  = is_null($reportID)  || empty($reportID);
+        // /insights/{insight_id}/insight_reports/{insight_report_id}
 
-        if ($isInsightIDEmpty || $isReportIDEmpty || is_null($data)) {
-            $this->logHelper->log(static::DEBUG, 'Insight id, report id and data is needed to update report card details');
+        if (is_null($insightID) || empty($insightID) || is_null($reportID) || empty($reportID) || is_null($data)) {
+            $this->logHelper->log('DEBUG', 'Insight id, report id and data is needed to update report card details');
 
             return false;
         }
 
         $params =  array(
-                            static::RESOURCES        => $insightID,
-                            static::INSIGHT_REPORTS => $reportID,
+                            'resources'        => $insightID,
+                            'insight_reports' => $reportID,
                         );
 
         return $this->cmService->updateCustomContextData($params, $data);
@@ -426,25 +406,26 @@ class InsightHelper
      */
     public function createInsightDataStoreExtract($insightID, $dataStoreID, $extractName)
     {
-        $isInsightIDEmpty   = is_null($insightID)   || empty($insightID);
-        $isDataStoreIDEmpty = is_null($dataStoreID) || empty($dataStoreID);
-        $isExtractNameEmpty = is_null($extractName) || empty($extractName);
+        // /insights/{insight_id}/datastores/{datastore_id}
+      //  echo "\ncreateInsightDataStoreExtract : $insightID, $dataStoreID, $extractName";
+        if (is_null($insightID) || empty($insightID) || is_null($dataStoreID) || empty($dataStoreID) || is_null($extractName) || empty($extractName)) {
+            $this->logHelper->log('DEBUG', 'Insight id, datastore id and extract name is needed to create an extract');
 
-        if ($isInsightIDEmpty || $isDataStoreIDEmpty || $isExtractNameEmpty) {
-            $this->logHelper->log(static::DEBUG, 'Insight id, datastore id and extract name is needed to create an extract');
             return false;
         }
 
         $extractID = null;
         $extractID = $this->getInsightDataStoreExtractID($insightID, $dataStoreID, $extractName);
 
-        if (!$extractID) {
+        if ($extractID) {
+            return $extractID;
+        } else {
             $this->logHelper->log('INFO', 'Attempting creation of extract with name '.$extractName.'...');
 
             $params =  array(
-                                static::RESOURCES   => $insightID,
-                                static::DATASTORES => $dataStoreID,
-                                static::EXTRACTS   => '',
+                                'resources'   => $insightID,
+                                'datastores' => $dataStoreID,
+                                'extracts'   => '',
                             );
 
             $data =  array('name' => $extractName);
@@ -452,12 +433,11 @@ class InsightHelper
             $response = $this->cmService->updateCustomContextData($params, $data, "POST");
 
             if ($response) {
-                $extractID = $response->id;
+                return $response->id;
             } else {
-                $extractID = false;
+                return false;
             }
         }
-        return $extractID;
     }
 
     /**
@@ -468,35 +448,36 @@ class InsightHelper
      */
     public function createInsightDataStore($insightID, $dataStoretName)
     {
-        $isInsightIDEmpty = is_null($insightID) || empty($insightID);
-        $isDataStoretNameEmpty = is_null($dataStoretName) || empty($dataStoretName);
+        // /insights/{insight_id}/datastores/{datastore_id}
 
-        if ($isInsightIDEmpty || $isDataStoretNameEmpty) {
-            $this->logHelper->log(static::DEBUG, 'Insight id and datastore name is needed to create a datastore');
+        if (is_null($insightID) || empty($insightID) || is_null($dataStoretName) || empty($dataStoretName)) {
+            $this->logHelper->log('DEBUG', 'Insight id and datastore name is needed to create a datastore');
+
             return false;
         }
 
         $dataStoreID = null;
         $dataStoreID = $this->getInsightDataStoreID($insightID, $dataStoretName);
         
-        if (!$dataStoreID) {
+        if ($dataStoreID) {
+            return $dataStoreID;
+        } else {
             $this->logHelper->log('INFO', 'Attempting creation of datastore with name '.$dataStoretName.'...');
 
             $params = array(
-                                static::RESOURCES   => $insightID,
-                                static::DATASTORES => '',
+                                'resources'   => $insightID,
+                                'datastores' => '',
                             );
             $data =  array('name' => $dataStoretName);
 
             $response = $this->cmService->updateCustomContextData($params, $data, "POST");
 
             if ($response) {
-                $dataStoreID = $response->id;
+                return $response->id;
             } else {
-                $dataStoreID = false;
+                return false;
             }
         }
-        return $dataStoreID;
     }
 
     /**
@@ -508,37 +489,39 @@ class InsightHelper
      */
     public function createInsightReportCard($insightID, $reportID, $cardName)
     {
-        $isInsightIDEmpty = is_null($insightID) || empty($insightID);
-        $isReportIDEmpty = is_null($reportID) || empty($reportID);
-        $isCardNameEmpty = is_null($cardName) || empty($cardName);
+        // /insights/{insight_id}/datastores/{datastore_id}
 
-        if ($isInsightIDEmpty || $isReportIDEmpty || $isCardNameEmpty) {
-            $this->logHelper->log(static::DEBUG, 'Insight id, report id and report card name is needed to create a report card');
+        if (is_null($insightID) || empty($insightID) || is_null($reportID) || empty($reportID) || is_null($cardName) || empty($cardName)) {
+            $this->logHelper->log('DEBUG', 'Insight id, report id and report card name is needed to create a report card');
+
             return false;
         }
 
         $cardID = null;
+
         $cardID = $this->getInsightReportCardID($insightID, $reportID, $cardName);
 
-        if (!$cardID) {
+        if ($cardID) {
+            return $cardID;
+        } else {
             $this->logHelper->log('INFO', 'Attempting creation of report card with name '.$cardName.'...');
 
             $params =  array(
-                                static::RESOURCES => $insightID,
-                                static::INSIGHT_REPORTS => $reportID,
-                                static::INSIGHT_CARDS => '',
+                                'resources' => $insightID,
+                                'insight_reports' => $reportID,
+                                'insight_cards' => '',
                             );
             $data =  array('name' => $cardName);
 
             $response = $this->cmService->updateCustomContextData($params, $data, "POST");
+         //   echo "RESPONSE AFTER CARD CREATION ....."; print_r($response);
 
             if ($response) {
-                $cardID = $response->id;
+                return $response->id;
             } else {
-                $cardID = false;
+                return false;
             }
         }
-        return $cardID;
     }
 
     /**
@@ -549,31 +532,37 @@ class InsightHelper
      */
     public function createInsightReport($insightID, $reportName)
     {
+        // /insights/{insight_id}/datastores/{datastore_id}
+
         if (is_null($insightID) || empty($insightID) || is_null($reportName) || empty($reportName)) {
-            $this->logHelper->log(static::DEBUG, 'Insight id and report name is needed to create a report');
+            $this->logHelper->log('DEBUG', 'Insight id and report name is needed to create a report');
+
             return false;
         }
 
         $reportID = null;
         $reportID = $this->getInsightReportId($insightID, $reportName);
 
-        if (!$reportID) {
+        if ($reportID) {
+            return $reportID;
+        } else {
             $this->logHelper->log('INFO', 'Attempting creation of report with name '.$reportName.'...');
 
             $params =  array(
-                                static::RESOURCES => $insightID,
-                                static::INSIGHT_REPORTS => '',
+                                'resources' => $insightID,
+                                'insight_reports' => '',
                             );
             $data =  array('name' => $reportName);
 
             $response = $this->cmService->updateCustomContextData($params, $data, "POST");
+           // echo "RESPONSE IS :";
+           // var_dump($response);
             if ($response) {
-                $reportID = $response->id;
+                return $response->id;
             } else {
-                $reportID = false;
+                return false;
             }
         }
-        return $reportID;
     }
 
     /*******************************************************************************/
@@ -612,8 +601,8 @@ class InsightHelper
                 $sprintHashData["id"]           = $sprintData->sprint_id;
                 $sprintHashData["name"]         = $sprintData->sprint_name;
                 $sprintHashData["status"]       = $sprintData->sprint_status;
-                $sprintHashData["startDate"]    = $startDate->format(static::DATE_VALUE);
-                $sprintHashData["endDate"]      = $endDate->format(static::DATE_VALUE);
+                $sprintHashData["startDate"]    = $startDate->format("Y-m-d");
+                $sprintHashData["endDate"]      = $endDate->format("Y-m-d");;
                 $sprintHashData["completeDate"] = $sprintData->completeDate;
 
                 $sprintHash[$sprintData->sprint_id] = $sprintHashData;
@@ -629,8 +618,6 @@ class InsightHelper
         if ($timeArray && is_array($timeArray) && count($timeArray) > 0){
             $timeString = "";
             foreach ($timeArray as $key => $value) {
-                // workaround for code smell - unused local variable
-                echo str_replace($key, "", $key);
                 $timeString = ($timeString !== "") ? $timeString.",".$value : $value;
             }
             return 'IN ('.$timeString.')';
@@ -680,8 +667,8 @@ class InsightHelper
         $dataStoreID = $this->getInsightDataStoreID($insightOrResourceID, $dataStoreName);
 
         $paramHash = array();
-        $paramHash[static::FIELDS] = "data";
-        $paramHash[static::FILTER] = array( 'name' => $extractName );
+        $paramHash["fields"] = "data";
+        $paramHash["filter"] = array( 'name' => $extractName );
 
         return $this->getInsightDataStoreExtracts($insightOrResourceID,$dataStoreID,$paramHash,'');
     }
@@ -711,14 +698,14 @@ class InsightHelper
     {
         $iCount       = 0;
         $duration_arr = [];
-        $curr_date    = is_null($curr_date) ? date(static::DATE_VALUE) : $curr_date;
+        $curr_date    = is_null($curr_date) ? date("Y-m-d") : $curr_date;
         $oneDay = ' -1 day';
 
         switch ($projectionUnit) {
             case "day":
                 while ($iCount < $projectionCount) {
                     $duration_arr[$iCount] = $curr_date;
-                    $curr_date = date(static::DATE_VALUE, strtotime($oneDay, strtotime($curr_date)));
+                    $curr_date = date('Y-m-d', strtotime($oneDay, strtotime($curr_date)));
                     ++$iCount;
                 }
                 break;
@@ -726,7 +713,7 @@ class InsightHelper
                 $projectionCount = $projectionCount * 7;
                 while ($iCount < $projectionCount) {
                     $duration_arr[$iCount] = $curr_date;
-                    $curr_date = date(static::DATE_VALUE, strtotime($oneDay, strtotime($curr_date)));
+                    $curr_date = date('Y-m-d', strtotime($oneDay, strtotime($curr_date)));
                     ++$iCount;
                 }
                 break;
@@ -734,16 +721,16 @@ class InsightHelper
                 $projectionCount = $projectionCount * 30;
                 while ($iCount < $projectionCount) {
                     $duration_arr[$iCount] = $curr_date;
-                    $curr_date = date(static::DATE_VALUE, strtotime($oneDay, strtotime($curr_date)));
+                    $curr_date = date('Y-m-d', strtotime($oneDay, strtotime($curr_date)));
                     ++$iCount;
                 }
                 break;
-            case static::SPRINT:
+            case "sprint":
                 $duration_arr = $this->sprint_getDateRangeForAllSprints();
                 break;
             default : break;
         }
-        if (is_array($duration_arr) && $projectionUnit === static::SPRINT) {
+        if (is_array($duration_arr) && $projectionUnit === "sprint") {
             return $duration_arr;        
         } elseif (is_array($duration_arr)) {
             return array_reverse($duration_arr);
@@ -765,19 +752,19 @@ class InsightHelper
     public function getExtractData($resourceID, $dataStoreName, $filterFields = "name,result", $projectionUnit = "day", $timeArray = null) {
         $this->logHelper->log("INFO", "Attempting data pull from cloudmunch data base ...");
         $paramHash = array();
-        $paramHash[static::FIELDS] = $filterFields;
+        $paramHash["fields"] = $filterFields;
         $data   = array();
-        $filter = static::FILTER;
+        $filter = "filter";
 
         $dataStoreID = $this->getInsightDataStoreID($resourceID, $dataStoreName);
 
         if (!$dataStoreID) {
-          $this->logHelper->log(static::ERROR, "Unable to retrive data store id!");
+          $this->logHelper->log("ERROR", "Unable to retrive data store id!");
           return false;
         }
 
         // get data sprint wise
-        if (!is_null($timeArray) && is_array($timeArray) && ($projectionUnit === static::SPRINT)) {
+        if (!is_null($timeArray) && is_array($timeArray) && ($projectionUnit === "sprint")) {
             foreach ($timeArray as $sprint => $dateList) {
                 $sprintData = array();
                 $paramHash[$filter] = array('name' => $dateList);
@@ -800,7 +787,7 @@ class InsightHelper
             }
             $data = $this->getInsightDataStoreExtracts($resourceID,$dataStoreID,$paramHash,'');
             if (!$data) {
-              $this->logHelper->log(static::ERROR, "Unable to retrieve extracts for date projection!");
+              $this->logHelper->log("ERROR", "Unable to retrieve extracts for date projection!");
               return false;
             }
         }
@@ -840,7 +827,7 @@ class InsightHelper
         $dataOutput["visualization_map"] = $visualizationMap;
         $data["data"] = $dataOutput;
 
-        $reportID = $this->createInsightReport($resourceID, date(static::DATE_VALUE));
+        $reportID = $this->createInsightReport($resourceID, date('Y-m-d'));
         $cardID   = $this->createInsightReportCard($resourceID, $reportID, $reportName);
         $this->updateInsightReportCard($resourceID, $reportID, $cardID, $data);
         $this->logHelper->log("INFO", 'Report creation complete!');
@@ -876,7 +863,7 @@ class InsightHelper
         $dataOutput["visualization_map"] = $visualizationMap;
         $data["data"] = $dataOutput;
 
-        $reportID = $this->createInsightReport($resourceID, date(static::DATE_VALUE));
+        $reportID = $this->createInsightReport($resourceID, date('Y-m-d'));
         $cardID   = $this->createInsightReportCard($resourceID, $reportID, $reportName);
         $this->updateInsightReportCard($resourceID, $reportID, $cardID, $data);
         $this->logHelper->log("INFO", 'Report creation complete!');
@@ -891,7 +878,7 @@ class InsightHelper
      *   @return array with visualization map
      */
     public function linegraph_constructViewcardVisualizationMeta($graphLegendsList) {
-        return array("plots" => array( "x" => array(static::LABEL), "y" => $graphLegendsList));
+        return array("plots" => array( "x" => array("label"), "y" => $graphLegendsList));
     }
 
     /**
@@ -904,21 +891,21 @@ class InsightHelper
                             "default" => "line_default", 
                             "url"     => $url, 
                             "date"    => date("Y-m-d H:i:s"), 
-                            static::LABEL   => ucfirst($cardTitle), 
+                            "label"   => ucfirst($cardTitle), 
                             "source"  => $source, 
                             "group"   => $group,
                             "description" => $description,
                             "visualization_options" => array("line_default"),
-                            "xaxis"   => array(static::LABEL => $xAxisLabel),
-                            "yaxis"   => array(static::LABEL => $yAxisLabel),
+                            "xaxis"   => array("label" => $xAxisLabel),
+                            "yaxis"   => array("label" => $yAxisLabel),
                         );
 
         $isToleranceSet = (isset($tolerance) && is_array($tolerance) && count($tolerance) > 0);
         
         if ($isToleranceSet) {
-            $cardMeta[static::TOLERANCE_STATE] = ($isToleranceSet && $tolerance[static::TOLERANCE_STATE]) ? $tolerance[static::TOLERANCE_STATE] : '';
-            $cardMeta[static::TOLERANCE_DESCRIPTION] = ($isToleranceSet && $tolerance[static::TOLERANCE_DESCRIPTION]) ? $tolerance[static::TOLERANCE_DESCRIPTION] : '';
-            $cardMeta[static::TOLERANCE_HIT] = ($isToleranceSet && $tolerance[static::TOLERANCE_HIT]) ? $tolerance[static::TOLERANCE_HIT] : '';
+            $cardMeta['toleranceState'] = ($isToleranceSet && $tolerance['toleranceState']) ? $tolerance['toleranceState'] : '';
+            $cardMeta['toleranceDescription'] = ($isToleranceSet && $tolerance['toleranceDescription']) ? $tolerance['toleranceDescription'] : '';
+            $cardMeta['toleranceHit'] = ($isToleranceSet && $tolerance['toleranceHit']) ? $tolerance['toleranceHit'] : '';
         }
         
         return $cardMeta;
@@ -931,22 +918,22 @@ class InsightHelper
      */
     public function kanban_constructViewcardMeta($cardTitle, $source, $description, $group, $tolerance = null, $url = "#") {
         $cardMeta =  array(
-                        "default" => static::KANBAN, 
+                        "default" => "kanban", 
                         "url"     => $url, 
                         "date"    => date('Y-m-d H:i:s'), 
-                        static::LABEL   => ucfirst($cardTitle), 
+                        "label"   => ucfirst($cardTitle), 
                         "source"  => $source, 
                         "group"   => $group,
                         "description" => $description,
-                        "visualization_options" => array(static::KANBAN)
+                        "visualization_options" => array("kanban")
                     );
 
         $isToleranceSet = (isset($tolerance) && is_array($tolerance) && count($tolerance) > 0);
         
         if ($isToleranceSet) {
-            $cardMeta[static::TOLERANCE_STATE] = ($isToleranceSet && $tolerance[static::TOLERANCE_STATE]) ? $tolerance[static::TOLERANCE_STATE] : '';
-            $cardMeta[static::TOLERANCE_DESCRIPTION] = ($isToleranceSet && $tolerance[static::TOLERANCE_DESCRIPTION]) ? $tolerance[static::TOLERANCE_DESCRIPTION] : '';
-            $cardMeta[static::TOLERANCE_HIT] = ($isToleranceSet && $tolerance[static::TOLERANCE_HIT]) ? $tolerance[static::TOLERANCE_HIT] : '';
+            $cardMeta['toleranceState'] = ($isToleranceSet && $tolerance['toleranceState']) ? $tolerance['toleranceState'] : '';
+            $cardMeta['toleranceDescription'] = ($isToleranceSet && $tolerance['toleranceDescription']) ? $tolerance['toleranceDescription'] : '';
+            $cardMeta['toleranceHit'] = ($isToleranceSet && $tolerance['toleranceHit']) ? $tolerance['toleranceHit'] : '';
         }
         
         return $cardMeta;
@@ -960,7 +947,7 @@ class InsightHelper
      *   @return array with visualization map
      */
     public function kanban_constructViewcardVisualizationMeta() {
-        return array( "cards" => array("type" => static::KANBAN));
+        return array( "cards" => array("type" => "kanban"));
     }
 
     /**
@@ -971,12 +958,12 @@ class InsightHelper
      *   @param string dataStoreName    : name of data store
      */
     public function updateExtract($resourceID, $data, $dataStoreName, $extractName = null){
-        $extractName = (is_null($extractName) || empty($extractName)) ? date(static::DATE_VALUE) : $extractName;
+        $extractName = (is_null($extractName) || empty($extractName)) ? date('Y-m-d') : $extractName;
         if($resourceID && is_array($data) && $dataStoreName) {
             $this->logHelper->log("INFO", "Attempting Creation of Data Store $dataStoreName ...");
             $dataStoreID = $this->createInsightDataStore($resourceID, $dataStoreName);
             if (!$dataStoreID) {
-                $this->logHelper->log(static::ERROR, "Unable to create datastore!");
+                $this->logHelper->log("ERROR", "Unable to create datastore!");
                 return false;
             }
             $this->logHelper->log("INFO", "DataStore created!");
@@ -984,18 +971,18 @@ class InsightHelper
             $arrData = [];
             $arrData[result] = $data;
             $extractID = $this->createInsightDataStoreExtract($resourceID, $dataStoreID, $extractName);
-            if ($extractID) {
-                $response = $this->updateInsightDataStoreExtract($resourceID, $dataStoreID, $extractID, $arrData);
-                if (!$response) {
-                    $this->logHelper->log(static::ERROR, "'Unable to update extract!");
-                    return false;
-                }
+            if (!$extractID) {
+                $this->logHelper->log("ERROR", "'Unable to create extract!");
+                return false;
             }
-            if($response){
-                $this->logHelper->log("INFO", "DataStore extract created!");
+            $response = $this->updateInsightDataStoreExtract($resourceID, $dataStoreID, $extractID, $arrData);
+            if (!$response) {
+                $this->logHelper->log("ERROR", "'Unable to update extract!");
+                return false;
             }
+            $this->logHelper->log("INFO", "DataStore extract created!");
         } else {
-            $this->logHelper->log(static::ERROR, "Resource id, data and datastore name has to be passed to update an extract");
+            $this->logHelper->log("ERROR", "Resource id, data and datastore name has to be passed to update an extract");
             return false;
         }
     }
@@ -1022,9 +1009,9 @@ class InsightHelper
             $previous  = $latest - 1;
             $toleranceFailed  = false;
             $toleranceWarning = false;
-            $tolerance[static::TOLERANCE_DESCRIPTION] = 'Compare change of latest entry with its previous one against provided upper and lower limit. If change is less than lower limit, status of card will be set to success, if change is greater than upper limit, status will be set to critical else it will be set to warning.';
+            $tolerance['toleranceDescription'] = 'Compare change of latest entry with its previous one against provided upper and lower limit. If change is less than lower limit, status of card will be set to success, if change is greater than upper limit, status will be set to critical else it will be set to warning.';
             foreach ($data[$latest] as $key => $value) {
-                if (strtolower($key) !== static::LABEL && $data[$previous] && $data[$previous]->$key && floatval($data[$previous]->$key) !== 0) {
+                if (strtolower($key) !== "label" && $data[$previous] && $data[$previous]->$key && floatval($data[$previous]->$key) !== 0) {
 
                     // % change = ( abs (originalValue - newValue) / originalValue ) * 100
                     $change = number_format(( abs( floatval( $value ) - floatval( $data[$previous]->$key ) ) / floatval( $data[$previous]->$key )) * 100);                    
@@ -1032,28 +1019,28 @@ class InsightHelper
                     if ($change > $upperLimit) {
                         $toleranceFailed = true;
                         $toleranceMsg    = "Percentage change for $key ($change) is greater than upper limit (".$upperLimit.").";
-                        $tolerance[static::TOLERANCE_STATE] = 'critical';
-                        $tolerance[static::TOLERANCE_HIT]   = isset($tolerance[static::TOLERANCE_HIT]) ? $tolerance[static::TOLERANCE_HIT]." ".$toleranceMsg : $toleranceMsg; 
+                        $tolerance['toleranceState'] = 'critical';
+                        $tolerance['toleranceHit']   = isset($tolerance['toleranceHit']) ? $tolerance['toleranceHit']." ".$toleranceMsg : $toleranceMsg; 
                     } elseif (($change <= $upperLimit) && ($change >= $lowerLimit)) {
                         $toleranceWarning = true;
                         $toleranceMsg     = "Percentage change for $key ($change) is between upper limit (".$upperLimit.") and lower limit (".$lowerLimit.").";
-                        $tolerance[static::TOLERANCE_HIT]   = isset($tolerance[static::TOLERANCE_HIT]) ? $tolerance[static::TOLERANCE_HIT]." ".$toleranceMsg : $toleranceMsg; 
-                        $tolerance[static::TOLERANCE_STATE] = !$toleranceFailed ? "warning" : $tolerance[static::TOLERANCE_STATE];
+                        $tolerance['toleranceHit']   = isset($tolerance['toleranceHit']) ? $tolerance['toleranceHit']." ".$toleranceMsg : $toleranceMsg; 
+                        $tolerance['toleranceState'] = !$toleranceFailed ? "warning" : $tolerance['toleranceState'];
                     } elseif ($change < intval($upperLimit)) {
-                        $tolerance[static::TOLERANCE_STATE] = (!$toleranceFailed && !$toleranceWarning) ? "success" : $tolerance[static::TOLERANCE_STATE];
+                        $tolerance['toleranceState'] = (!$toleranceFailed && !$toleranceWarning) ? "success" : $tolerance['toleranceState'];
                     }
                 }
             }
             if ($toleranceFailed || $toleranceWarning){
-                $tolerance[static::TOLERANCE_DESCRIPTION] .= "\n".$tolerance[static::TOLERANCE_HIT];
-            } elseif ($tolerance[static::TOLERANCE_STATE] === 'success') {
-                $tolerance[static::TOLERANCE_DESCRIPTION] .= "\nChange is within the acceptance criteria.";                
+                $tolerance['toleranceDescription'] .= "\n".$tolerance['toleranceHit'];
+            } elseif ($tolerance['toleranceState'] === 'success') {
+                $tolerance['toleranceDescription'] .= "\nChange is within the acceptance criteria.";                
             } else {
-                $tolerance[static::TOLERANCE_DESCRIPTION] .= "Tolerance was not checked for this card. The following conditions have to be met to perform the same : \n- There should be atleast two values in x-axis.\n- X-axis value of (n-1)th element should be greater than 0";
+                $tolerance["toleranceDescription"] .= "Tolerance was not checked for this card. The following conditions have to be met to perform the same : \n- There should be atleast two values in x-axis.\n- X-axis value of (n-1)th element should be greater than 0";
             }
             return $tolerance;
         } else {
-            $tolerance[static::TOLERANCE_DESCRIPTION] = "Tolerance was not checked for this card. The following conditions have to be met to perform the same : \n- There should be atleast two values in x-axis.\n- X-axis value of (n-1)th element should be greater than 0";
+            $tolerance["toleranceDescription"] = "Tolerance was not checked for this card. The following conditions have to be met to perform the same : \n- There should be atleast two values in x-axis.\n- X-axis value of (n-1)th element should be greater than 0";
             return $tolerance;
         }
     }
