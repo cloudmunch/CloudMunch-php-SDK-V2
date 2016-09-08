@@ -1011,6 +1011,7 @@ class InsightHelper
             $toleranceWarning = false;
             $tolerance['toleranceDescription'] = 'Compare change of latest entry with its previous one against provided upper and lower limit. If change is less than lower limit, status of card will be set to success, if change is greater than upper limit, status will be set to critical else it will be set to warning.';
             foreach ($data[$latest] as $key => $value) {
+                $data[$previous] = is_array($data[$previous]) ? (object) $data[$previous] : $data[$previous]; 
                 if (strtolower($key) !== "label" && $data[$previous] && $data[$previous]->$key && floatval($data[$previous]->$key) !== 0) {
 
                     // % change = ( abs (originalValue - newValue) / originalValue ) * 100
