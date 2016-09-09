@@ -1011,7 +1011,7 @@ class InsightHelper
             $toleranceWarning = false;
             $tolerance['toleranceDescription'] = '';
             if ($resourceName && $cardLabel) {
-                $tolerance['toleranceDescription'] = $source ? "**For the Resource: " . $resourceName . ", Context: " . $source ." and Report: " . $cardLabel . " following are the highlights : **\n\n  " : "**For the resource " . $resourceName . " and report " . $cardLabel . " following are the highlights : **\n\n  ";
+                $tolerance['toleranceDescription'] = $source ? "**For the Resource: " . $resourceName . ", Context: " . $source ." and Report: " . $cardLabel . " following are the highlights : **\n\n  " : "**For the Resource: " . $resourceName . " and Report: " . $cardLabel . " following are the highlights : **\n\n  ";
             }
             foreach ($data[$latest] as $key => $value) {
                 $data[$previous] = is_array($data[$previous]) ? (object) $data[$previous] : $data[$previous];
