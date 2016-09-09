@@ -998,7 +998,7 @@ class InsightHelper
      *                              : toleranceDescription
      *                              : toleranceHit
      */
-    function checkToleranceForTrend($data, $upperLimit, $lowerLimit) {
+    function checkToleranceForTrend($data, $upperLimit, $lowerLimit, $resourceName = null, $cardLabel = null, $source = null) {
         $elements = count($data);
         $upperLimit = intval($upperLimit);
         $lowerLimit = intval($lowerLimit);
@@ -1009,8 +1009,12 @@ class InsightHelper
             $previous  = $latest - 1;
             $toleranceFailed  = false;
             $toleranceWarning = false;
-            $tolerance['toleranceDescription'] = 'Compare change of latest entry with its previous one against provided upper and lower limit. If change is less than lower limit, status of card will be set to success, if change is greater than upper limit, status will be set to critical else it will be set to warning.';
+            $tolerance['toleranceDescription'] = '';
+            if ($resourceName && $cardLabel) {
+                $tolerance['toleranceDescription'] = $source ? "**For the Resource: " . $resourceName . ", Context: " . $source ." and Report: " . $cardLabel . " following are the highlights : **\n\n  " : "**For the resource " . $resourceName . " and report " . $cardLabel . " following are the highlights : **\n\n  ";
+            }
             foreach ($data[$latest] as $key => $value) {
+                $data[$previous] = is_array($data[$previous]) ? (object) $data[$previous] : $data[$previous];
                 if (strtolower($key) !== "label" && $data[$previous] && $data[$previous]->$key && floatval($data[$previous]->$key) !== 0) {
 
                     // % change = ( abs (originalValue - newValue) / originalValue ) * 100
@@ -1018,12 +1022,12 @@ class InsightHelper
 
                     if ($change > $upperLimit) {
                         $toleranceFailed = true;
-                        $toleranceMsg    = "Percentage change for $key ($change) is greater than upper limit (".$upperLimit.").";
+                        $toleranceMsg    = "There seems to be a significant change (".$upperLimit.") in $key when compared to previous value, probably needs some intervention.";
                         $tolerance['toleranceState'] = 'critical';
                         $tolerance['toleranceHit']   = isset($tolerance['toleranceHit']) ? $tolerance['toleranceHit']." ".$toleranceMsg : $toleranceMsg; 
                     } elseif (($change <= $upperLimit) && ($change >= $lowerLimit)) {
                         $toleranceWarning = true;
-                        $toleranceMsg     = "Percentage change for $key ($change) is between upper limit (".$upperLimit.") and lower limit (".$lowerLimit.").";
+                        $toleranceMsg     = "The change in $key when compared to previous value is trending towards critical (".$upperLimit.").";
                         $tolerance['toleranceHit']   = isset($tolerance['toleranceHit']) ? $tolerance['toleranceHit']." ".$toleranceMsg : $toleranceMsg; 
                         $tolerance['toleranceState'] = !$toleranceFailed ? "warning" : $tolerance['toleranceState'];
                     } elseif ($change < intval($upperLimit)) {
@@ -1034,13 +1038,13 @@ class InsightHelper
             if ($toleranceFailed || $toleranceWarning){
                 $tolerance['toleranceDescription'] .= "\n".$tolerance['toleranceHit'];
             } elseif ($tolerance['toleranceState'] === 'success') {
-                $tolerance['toleranceDescription'] .= "\nChange is within the acceptance criteria.";                
+                $tolerance['toleranceDescription'] .= "\nAll parameters are trending within an acceptable range.";                
             } else {
-                $tolerance["toleranceDescription"] .= "Tolerance was not checked for this card. The following conditions have to be met to perform the same : \n- There should be atleast two values in x-axis.\n- X-axis value of (n-1)th element should be greater than 0";
+                $tolerance["toleranceDescription"] .= "Tolerance was not configured or previous value is either 0 or non-existent.";
             }
             return $tolerance;
         } else {
-            $tolerance["toleranceDescription"] = "Tolerance was not checked for this card. The following conditions have to be met to perform the same : \n- There should be atleast two values in x-axis.\n- X-axis value of (n-1)th element should be greater than 0";
+            $tolerance["toleranceDescription"] = "Tolerance was not configured or previous value is either 0 or non-existent.";
             return $tolerance;
         }
     }
