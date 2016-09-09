@@ -1022,12 +1022,12 @@ class InsightHelper
 
                     if ($change > $upperLimit) {
                         $toleranceFailed = true;
-                        $toleranceMsg    = "There seems to be a significant change (".$upperLimit.") in $key when compared to previous value, probably needs some intervention.";
+                        $toleranceMsg    = "- There seems to be a significant change (".$upperLimit.") in $key when compared to previous value, probably needs some intervention.";
                         $tolerance['toleranceState'] = 'critical';
                         $tolerance['toleranceHit']   = isset($tolerance['toleranceHit']) ? $tolerance['toleranceHit']." ".$toleranceMsg : $toleranceMsg; 
                     } elseif (($change <= $upperLimit) && ($change >= $lowerLimit)) {
                         $toleranceWarning = true;
-                        $toleranceMsg     = "The change in $key when compared to previous value is trending towards critical (".$upperLimit.").";
+                        $toleranceMsg     = "- The change in $key when compared to previous value is trending towards critical (".$upperLimit.").";
                         $tolerance['toleranceHit']   = isset($tolerance['toleranceHit']) ? $tolerance['toleranceHit']." ".$toleranceMsg : $toleranceMsg; 
                         $tolerance['toleranceState'] = !$toleranceFailed ? "warning" : $tolerance['toleranceState'];
                     } elseif ($change < intval($upperLimit)) {
@@ -1038,7 +1038,7 @@ class InsightHelper
             if ($toleranceFailed || $toleranceWarning){
                 $tolerance['toleranceDescription'] .= "\n".$tolerance['toleranceHit'];
             } elseif ($tolerance['toleranceState'] === 'success') {
-                $tolerance['toleranceDescription'] .= "\nAll parameters are trending within an acceptable range.";                
+                $tolerance['toleranceDescription'] .= "- All parameters are trending within an acceptable range.";                
             } else {
                 $tolerance["toleranceDescription"] .= "Tolerance was not configured or previous value is either 0 or non-existent.";
             }
