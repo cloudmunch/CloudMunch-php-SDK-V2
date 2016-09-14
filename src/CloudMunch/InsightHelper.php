@@ -957,7 +957,7 @@ class InsightHelper
      *   @param array  data             : data to be stored in database
      *   @param string dataStoreName    : name of data store
      */
-    public function updateExtract($resourceID, $data, $dataStoreName, $extractName = null){
+    public function updateExtract($resourceID, $data, $dataStoreName, $extractName = null, $additionInfo = null){
         $extractName = (is_null($extractName) || empty($extractName)) ? date('Y-m-d') : $extractName;
         if($resourceID && is_array($data) && $dataStoreName) {
             $this->logHelper->log("INFO", "Attempting Creation of Data Store $dataStoreName ...");
@@ -970,6 +970,7 @@ class InsightHelper
 
             $arrData = [];
             $arrData[result] = $data;
+            $arrData[additional_info] = $additionInfo;
             $extractID = $this->createInsightDataStoreExtract($resourceID, $dataStoreID, $extractName);
             if (!$extractID) {
                 $this->logHelper->log("ERROR", "'Unable to create extract!");
@@ -1011,7 +1012,7 @@ class InsightHelper
             $toleranceWarning = false;
             $tolerance['toleranceDescription'] = '';
             if ($resourceName && $cardLabel) {
-                $tolerance['toleranceDescription'] = $source ? "**For the Resource: " . $resourceName . ", Context: " . $source ." and Report: " . $cardLabel . " following are the highlights : **\n\n  " : "**For the Resource: " . $resourceName . " and Report: " . $cardLabel . " following are the highlights : **\n\n  ";
+                $tolerance['toleranceDescription'] = $source ? "**Highlights for Resource: " . $resourceName . ", Context: " . $source ." and Report: " . $cardLabel . "**\n\n  " : "**Highlights for Resource: " . $resourceName . " and Report: " . $cardLabel . "**\n\n  ";
             }
             foreach ($data[$latest] as $key => $value) {
                 $data[$previous] = is_array($data[$previous]) ? (object) $data[$previous] : $data[$previous];
