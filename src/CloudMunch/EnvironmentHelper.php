@@ -14,7 +14,8 @@ require_once ("CloudmunchConstants.php");
 require_once ("AppErrorLogHandler.php");
 
 /**
- * This is a helper class for environments. User can manage environments in cloudmunch using this helper.
+ * This is a helper class for environments.
+ * User can manage environments in cloudmunch using this helper.
  */
 class EnvironmentHelper {
 	private $appContext = null;
@@ -101,12 +102,12 @@ class EnvironmentHelper {
 			$this->logHelper->log ( DEBUG, "Environment name and status need to be provided" );
 			return false;
 		}
-
-		$stage = $this->setStage($environmentData);
 		
-		$environmentData[stage] = [];
-		$environmentData[stage] = $stage;
-
+		$stage = $this->setStage ( $environmentData );
+		
+		$environmentData [stage] = [ ];
+		$environmentData [stage] = $stage;
+		
 		$statusconArray = array (
 				STATUS_CREATION_IN_PROGRESS,
 				STATUS_RUNNING,
@@ -141,58 +142,57 @@ class EnvironmentHelper {
 	
 	/**
 	 *
-	 * @param	array  data
+	 * @param
+	 *        	array data
 	 */
-
-	function setStage($data){
-		if (is_array($data) && isset($data['stage']) && !empty($data['stage']) && !is_null($data['stage'])) {
+	function setStage($data) {
+		if (is_array ( $data ) && isset ( $data ['stage'] ) && ! empty ( $data ['stage'] ) && ! is_null ( $data ['stage'] )) {
 			// return the same if stage is already set with required format
-			if (is_array($data['stage']) || is_object($data['stage'])){
-				return $data['stage'];
+			if (is_array ( $data ['stage'] ) || is_object ( $data ['stage'] )) {
+				return $data ['stage'];
 			} else {
-				$stage = $this->getStage("id", $data['stage']);
+				$stage = $this->getStage ( "id", $data ['stage'] );
 				// if name is set as value
-				if (is_null($stage)) {
-					$stage = $this->getStage("name", $data['stage']);
+				if (is_null ( $stage )) {
+					$stage = $this->getStage ( "name", $data ['stage'] );
 				}
 				// set to default stage
-				if (is_null($stage)) {
-					$stage = $this->getStage("name", $this->defaultStage);
+				if (is_null ( $stage )) {
+					$stage = $this->getStage ( "name", $this->defaultStage );
 				}
 				return $stage;
 			}
 		} else {
 			// set to default stage
-			return $this->getStage("name", $this->defaultStage);
+			return $this->getStage ( "name", $this->defaultStage );
 		}
 	}
-
+	
 	/**
 	 *
 	 * @param
-	 *			String  key
+	 *        	String key
 	 * @param
-	 *        	String 	value
+	 *        	String value
 	 */
-
-    function getStage($key, $value){
-        $url    = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/stages" ;
-        $data   = $this->cmDataManager->getDataForContext($url, $this->appContext->getAPIKey(), null);
-        $stages = $data->data;
-        $stageDetails = [];
-        if ($stages) {
-            foreach ($stages as $keyName => $stage) {
-                if ($stage->$key == $value) {
-                    $stageDetails[name] = isset($stage->name)?$stage->name:"";
-                    $stageDetails[id]   = isset($stage->id)?$stage->id:"";
-	                return $stageDetails;
-                }
-            }
-        } else {
-        	return false;
-        }
-    }
-
+	function getStage($key, $value) {
+		$url = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/stages";
+		$data = $this->cmDataManager->getDataForContext ( $url, $this->appContext->getAPIKey (), null );
+		$stages = $data->data;
+		$stageDetails = [ ];
+		if ($stages) {
+			foreach ( $stages as $keyName => $stage ) {
+				if ($stage->$key == $value) {
+					$stageDetails [name] = isset ( $stage->name ) ? $stage->name : "";
+					$stageDetails [id] = isset ( $stage->id ) ? $stage->id : "";
+					return $stageDetails;
+				}
+			}
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 *
 	 * @param
@@ -288,21 +288,21 @@ class EnvironmentHelper {
 				);
 			} else {
 				$this->logHelper->log ( INFO, "Role is not provided, linking with default role : $this->defaultRole" );
-				$rolefound=false;
-				foreach($defaultRoleDetails as $defaultRoleDetail){
-					if($defaultRoleDetail->name == $this->defaultRole){
+				$rolefound = false;
+				foreach ( $defaultRoleDetails as $defaultRoleDetail ) {
+					if ($defaultRoleDetail->name == $this->defaultRole) {
 						$roleID = $defaultRoleDetail->id;
-						$this->logHelper->log ( INFO,"Got the default role id");
-						$rolefound=true;
+						$this->logHelper->log ( INFO, "Got the default role id" );
+						$rolefound = true;
 					}
 				}
-				if(!$rolefound){
-					$this->logHelper->log ( INFO,"Creating default role");
+				if (! $rolefound) {
+					$this->logHelper->log ( INFO, "Creating default role" );
 					$new_role_details = $this->roleHelper->addRole ( $this->defaultRole );
 					$roleID = $new_role_details->id;
 				}
-				$this->logHelper->log ( INFO,"Role id is:".$roleID);
-			//	$roleID = $defaultRoleDetails [0]->id;
+				$this->logHelper->log ( INFO, "Role id is:" . $roleID );
+				// $roleID = $defaultRoleDetails [0]->id;
 				$data = array (
 						'tiers' => array (
 								$roleID => array (
@@ -380,7 +380,7 @@ class EnvironmentHelper {
 	
 	/**
 	 * Checks if Environment exists in cloudmunch.
-	 * 
+	 *
 	 * @param string $environmentID        	
 	 * @return boolean
 	 */
@@ -412,17 +412,17 @@ class EnvironmentHelper {
 		$tiers = $envdetails->tiers;
 		$assetNames = array ();
 		foreach ( $tiers as $tier ) {
-			foreach ( $tier as $key => $value ) {
-				$assets = $value->assets;
-				
-				array_merge ( $assetNames, $assets );
-			}
+			
+			$assets = ( array ) $tier->assets;
+			
+			$assetNames = array_merge ( $assetNames, $assets );
 		}
+		
 		$assetthelper = new AssetHelper ( $this->appContext, $this->logHelper );
 		$assetsDetail = array ();
 		foreach ( $assetNames as $assetName ) {
-			//$this->logHelper->log ( DEBUG, "Retrieve asset:" . $assetName );
-			$data = $assetthelper->getAsset ( $assetName, null );
+			$this->logHelper->log ( INFO, "Retrieve asset:" . $assetName->id );
+			$data = $assetthelper->getAsset ( $assetName->id, null );
 			array_push ( $assetsDetail, $data );
 		}
 		return $assetsDetail;
@@ -434,32 +434,34 @@ class EnvironmentHelper {
 	 *        	Deletes the given asset from environment
 	 */
 	function deleteAsset($environmentID, $assetID) {
-		//$this->logHelper->log ( INFO, "Asset id:" . $assetID );
+		// $this->logHelper->log ( INFO, "Asset id:" . $assetID );
 		$envdetails = $this->getEnvironment ( $environmentID, null );
 		$tiers = $envdetails->tiers;
 		
 		$tierbackup = array ();
 		$assetNames = array ();
 		
-		foreach ( $tiers as $tier=>$tierdetail) {
-                        if (($key = array_search ($assetID,$tierdetail->assets)) !== false) {
-				unset ($tierdetail->assets[$key]);
+		foreach ( $tiers as $tier => $tierdetail ) {
+			if (($key = array_search ( $assetID, $tierdetail->assets )) !== false) {
+				unset ( $tierdetail->assets [$key] );
 				$tiers->{$tier}->assets = $tierdetail->assets;
-                        }
-		}
-		/*foreach ( $tiers as $tier ) {
-			foreach ( $tier as $key => $value ) {
-				$assets = $value->assets;
-				if (($key = array_search ( $assetID, $assets )) !== false) {
-					unset ( $assets [$key] );
-					//$this->logHelper->log ( INFO, "Tier unset:" . $tier );
-					$value->assets = $assets;
-					
-					//$this->logHelper->log ( INFO, "Assets unset" );
-				}
-				
 			}
-		}*/
+		}
+		/*
+		 * foreach ( $tiers as $tier ) {
+		 * foreach ( $tier as $key => $value ) {
+		 * $assets = $value->assets;
+		 * if (($key = array_search ( $assetID, $assets )) !== false) {
+		 * unset ( $assets [$key] );
+		 * //$this->logHelper->log ( INFO, "Tier unset:" . $tier );
+		 * $value->assets = $assets;
+		 *
+		 * //$this->logHelper->log ( INFO, "Assets unset" );
+		 * }
+		 *
+		 * }
+		 * }
+		 */
 		$data = array (
 				"tiers" => $tiers 
 		);
