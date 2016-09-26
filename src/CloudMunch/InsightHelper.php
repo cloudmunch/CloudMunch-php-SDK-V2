@@ -959,7 +959,7 @@ class InsightHelper
      */
     public function updateExtract($resourceID, $data, $dataStoreName, $extractName = null, $additionInfo = null){
         $extractName = (is_null($extractName) || empty($extractName)) ? date('Y-m-d') : $extractName;
-        if($resourceID && is_array($data) && $dataStoreName) {
+        if($resourceID && $data && $dataStoreName) {
             $this->logHelper->log("INFO", "Attempting Creation of Data Store $dataStoreName ...");
             $dataStoreID = $this->createInsightDataStore($resourceID, $dataStoreName);
             if (!$dataStoreID) {
