@@ -129,7 +129,7 @@ class EnvironmentHelper {
 		$comment = "Adding environment with name $environmentName";
 		
 		$serverurl = $this->appContext->getMasterURL () . "/applications/" . $this->appContext->getProject () . "/environments";
-		$retArray = $this->cmDataManager->putDataForContext ( $serverurl, $this->appContext->getAPIKey (), $environmentData, $comment );
+		$retArray = $this->cmDataManager->putDataForContext ( $serverurl, $this->appContext->getAPIKey (), $environmentData, $comment, array("action" => "create_environment") );
 		
 		if ($retArray === false) {
 			return false;

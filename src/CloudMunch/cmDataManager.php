@@ -91,7 +91,7 @@ function downloadGSkey($url,$apikey,$querystring){
 /**
  * @return {"data":{"id":"SER2015101311095292382","name":"SER2015101311095292382"},"request":{"status":"SUCCESS"}}
  */
- function putDataForContext($url,$apikey,$data,$comment = null) {
+ function putDataForContext($url,$apikey,$data,$comment = null, $extraParams = null) {
  	// default data to be updated for all updates
  	$data[application_id] = $this->appContext->getProject();
  	$data[pipeline_id]    = $this->appContext->getJob();
@@ -102,11 +102,18 @@ function downloadGSkey($url,$apikey,$querystring){
 	if (!is_null($comment) && strlen($comment) > 0) {
 		$dat[comment] = $comment;
 	}
-	
+
+	if ($extraParams && is_array($extraParams) && count($extraParams) > 0) {
+		foreach ($extraParams as $key => $value) {
+			if( $key !== "data" && $key !== "comment") {
+				$dat[$key] = $value;
+			}	
+		}		
+	}
+
 	$dat = $this->json_string($this->json_object($dat));
 	$url = $url."?apikey=".$apikey;
-	//echo "data : " . $dat;
-
+	
 	$result = $this->do_curl($url, null, "POST", $dat, null);
 	
 	$result = $result["response"];
