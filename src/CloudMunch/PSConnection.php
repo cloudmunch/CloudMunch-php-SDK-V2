@@ -15,7 +15,8 @@ class PSConnection{
     */
     public function executePowershellCommand($servername, $username, $password, $cmd, $live=true) {
         $powershell_interceptor = "python ".dirname(__FILE__)."/libraries/powershell-interceptor.py"; 
-
+        $cmd = addslashes($cmd);
+        
         while (@ ob_end_flush()); // end all output buffers if any
         $proc = popen("$powershell_interceptor -jsoninput '{\"servername\":\"$servername\",\"serverusername\":\"$username\" ,\"password\":\"$password\" ,\"command\":\"$cmd;\" }' 2>&1 ; echo Exit status : $?", 'r');
 
