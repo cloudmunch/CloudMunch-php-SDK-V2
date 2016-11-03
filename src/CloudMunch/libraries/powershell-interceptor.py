@@ -17,7 +17,6 @@ try:
     if args.jsoninput is None:
         print "App received no parameters. Exiting.."
         sys.exit(100)
-    args.jsoninput[0] = args.jsoninput[0].replace('\\', '\\\\')
 except ValueError:
     print "Could not parse command parameters for starting winrm session."
     sys.exit(100)
@@ -59,8 +58,8 @@ if "\\" in data["serverusername"]:
     #script = base64.b64encode(script.encode("utf-16"))
     cmd = "powershell -ExecutionPolicy Bypass -command %s" % (script)
     p = Protocol(
-        endpoint='http://'+data["servername"]+':5985/wsman',
-        transport='ntlm',
+        endpoint='https://'+data["servername"]+':5986/wsman',
+        transport='credssp',
         username=data["serverusername"],
         password=data["password"],
         server_cert_validation='ignore')
