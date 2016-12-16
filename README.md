@@ -1,7 +1,7 @@
 # CloudMunch-php-SDK-V2
 CloudMunch SDK for PHP provides helper classes for CloudMunch plugin development.
 
-###Download SDK
+### Download SDK
 We recommend using [Composer](https://getcomposer.org/ "Composer") as package manager. All you need to install the sdk is to have the following entry in your composer.json file.
 
 ```json
@@ -9,80 +9,87 @@ We recommend using [Composer](https://getcomposer.org/ "Composer") as package ma
   {
     "cloudmunch/php-sdk-v2":"dev-master"
   }
-
 ```
 
-##Cloudmunch SDK Details
-###AppAbstract class
+## Cloudmunch SDK Details
+
+### AppAbstract class
 This is a base abstract class that should be extended by any plugin. 
 This class, provides methods to read parameters, create plugin context object and retrieve service objects.
 This class has the following lifecycle methods that the plugin need to invoke,
-initialize()
+
+- initialize()
 This method handles the input parameters and make this available for plugin.
 
-getProcessInput()
+- getProcessInput()
 This method returns the list of inputs to the plugin.
-process()
+
+- process()
 This is an abstract method to be implemented by every plugin.
 
-performAppcompletion()
+- performAppcompletion()
 This method handles the completion of a plugin execution.
  
- 
 Here is  the list of helper methods that can be used by plugin,
-getAppContext()
+
+- getAppContext()
 This method returns AppContext object for this runtime.
 
-getCloudmunchServerHelper()
+- getCloudmunchServerHelper()
 This method returns the Cloudmunch Server Helper class to manage servers registered with cloudmunch.
-getCloudmunchAssetHelper()
+
+- getCloudmunchAssetHelper()
 This method returns Asset helper to manage assets registered with cloudmunch.
-getCloudmunchService()
+
+- getCloudmunchService()
 This method returns Cloudmunch Service helper needed to invoke any services in cloudmunch.
-outputPipelineVariables()
+
+- outputPipelineVariables()
 Plugin uses this method to output variables to pipeline.
  
-AppContext class
+### AppContext class
 Plugins can get the context or environment information from this class.
 Here is the list of methods available,
-getWorkSpaceLocation()
+
+- getWorkSpaceLocation()
 This methods returns the absolute path to the workspace of the job.
 
-getArchiveLocation()
+- getArchiveLocation()
 This method returns the absolute path to the archive location.
-getTargetServer()
+
+- getTargetServer()
 This method returns the target server id on which the step is getting executed.
-getProject()
+
+- getProject()
 This method returns the project name in which the plugin is being executed.
-getJob()
+
+- getJob()
 This method returns the job name in which the plugin is being executed.
-getRunNumber()
+
+- getRunNumber()
 This method returns the current build number.
  
-##Helper classes
-###CloudmunchService
+## Helper classes
+### CloudmunchService
 This helper class provides method to retreive/update data from cloudmunch.
 Below is the list of methods that can be used.
-a) getCloudmunchData($context,$contextid,$filterdata)
-b)updateCloudmunchData($context,$contextid,$data)
-c) addCloudmunchData($context,$data)
-e)deleteCloudmunchData($context,$contextid)
-f)downloadKeys($filekey, $context, $contextid)
+
+- getCloudmunchData($context,$contextid,$filterdata)
+- updateCloudmunchData($context,$contextid,$data)
+- addCloudmunchData($context,$data)
+- deleteCloudmunchData($context,$contextid)
+ -downloadKeys($filekey, $context, $contextid)
  
-###AssetHelper
+### AssetHelper
 This is a helper class to manage assets in cloudmunch.
 
-###EnvironmentHelper
+### EnvironmentHelper
 This is a helper class to manage environments in cloudmunch.
  
-###RoleHelper
+### RoleHelper
 This is a helper class to manage roles in cloudmunch.
- 
 
-
-
-##Sample Plugin     
- 
+## Sample Plugin
 Let us look at a sample plugin that prints "Hello "+ "string passed at runtime" on execution.
 Plugin name : Hello
 Input: helloname: This need to be printed out with Hello.
@@ -90,7 +97,7 @@ Input: helloname: This need to be printed out with Hello.
 Step1: Create a folder "Hello"
 Step2: Create a file plugin.json with the following contents,
 
-```
+```json
 {
   "id": "Hello",
   "name": "Hello,
@@ -130,7 +137,7 @@ Step2: Create a file plugin.json with the following contents,
  
 Step 3:
 Create composer.json to download Cloudmunch PHP SDK 
-```
+```json
  {
 "require": 
    {
@@ -143,7 +150,8 @@ Step 4:
 Create a folder 'src'.
 Create a file , HelloDisplay.php.
 This file will have all the life cycle methods to control the plugin execution.
-```
+
+```php
 <?php
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../src/HelloDisplay.class.php';
  
@@ -151,14 +159,12 @@ $hellodisplay= new HelloDisplay();
 $hellodisplay->initialize();
 $processInput = $hellodisplay->getProcessInput();
 $hellodisplay->process($processInput);
- 
 ?>
 ```
 
 Step 5:
 Create a file HelloDisplay.class.php
-
-```
+```php
 <?php
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR .'../vendor/autoload.php';
 use CloudMunch \ AppAbstract;
@@ -177,7 +183,7 @@ class HelloDisplay extends AppAbstract
 
 Step 6:
 Create file install.sh, this will have scripts to install dependencies for your plugin.
-```
+```bash
 #!/bin/bash
 BASEDIR=$(dirname "$0")
 echo "Script location: ${BASEDIR}"
@@ -193,9 +199,7 @@ fi
 composer install
  ```
 
-
-
-##Using Integrations
+## Using Integrations
 
 Cloudmunch has an integration framework using which plugins can interact with any external service providers.
 For example if the plugin need to interact with Amazon web services, the account can be registered in cloudmunch integrations page.
@@ -224,7 +228,7 @@ $this->getLogHandler()->log(INFO, “Info message”);
 $this->getLogHandler()->log(DEBUG, “Debug message”);
 ```
 
-##Handling failure scenarios
+## Handling failure scenarios
  The plugin should exit with error on any failure scenarios.To enable this SDK provides a method to exit with error. The format to invoke the event is as below,
  ```
     $message = "Error message”;
