@@ -100,8 +100,8 @@ Step2: Create a file plugin.json with the following contents,
 ```json
 {
   "id": "Hello",
-  "name": "Hello,
-  "author": "rosmi@cloudmunch.com",
+  "name": "Hello",
+  "author": "you@emailaddress.com",
   "version": "1",
   "status": "enabled",
   "tags": ["git","checkout"],
